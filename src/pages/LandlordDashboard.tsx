@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, LogOut, Package, Crop } from "lucide-react";
 import Cropper from "react-easy-crop";
 import { store, CATEGORIES } from "@/lib/data";
 import type { Product, Landlord } from "@/lib/data";
+import { ProductCard } from "@/components/ProductCard";
 
 export default function LandlordDashboard() {
   const navigate = useNavigate();
@@ -176,8 +177,11 @@ export default function LandlordDashboard() {
 
         {/* Product form modal */}
         {showForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
-            <div className="w-full max-w-lg rounded-xl border border-border/60 bg-card p-6 space-y-4 animate-scale-in flex flex-col max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="flex flex-col lg:flex-row gap-6 w-full max-w-4xl p-4 animate-scale-in my-auto">
+              
+              {/* Form side */}
+              <div className="w-full lg:w-3/5 rounded-xl border border-border/60 bg-card p-6 space-y-4 flex flex-col shadow-2xl">
               {cropImage ? (
                 <div className="space-y-4">
                   <h2 className="font-display font-semibold text-lg flex items-center gap-2"><Crop size={20} /> Ajustar Imagem</h2>
@@ -230,8 +234,6 @@ export default function LandlordDashboard() {
                 <label className="text-sm font-medium text-foreground">Imagem do Produto (opcional)</label>
                 <input type="file" accept="image/*" onChange={handleImageUpload}
                   className="w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors cursor-pointer" />
-                {form.image && form.image.startsWith("data:") && <img src={form.image} alt="Preview" className="h-32 w-full object-cover rounded-lg border border-border/50" />}
-                {form.image && !form.image.startsWith("data:") && <img src={form.image} alt="Atual" className="h-32 w-full object-cover rounded-lg border border-border/50" />}
               </div>
 
                   <div className="flex gap-3">
@@ -245,6 +247,28 @@ export default function LandlordDashboard() {
                   </div>
                 </form>
               )}
+              </div>
+
+              {/* Preview Side */}
+              <div className="w-full lg:w-2/5 flex flex-col items-center justify-center space-y-4">
+                 <div className="text-center space-y-1">
+                   <h3 className="font-display font-semibold text-lg text-white drop-shadow-md">Preview do Anúncio</h3>
+                   <p className="text-sm text-white/80 drop-shadow">Veja como seu produto aparecerá.</p>
+                 </div>
+                 <div className="w-full max-w-[320px] shadow-[0_0_40px_rgba(0,0,0,0.5)] rounded-xl ring-1 ring-border/20 pointer-events-none bg-background">
+                    <ProductCard product={{
+                      id: "preview",
+                      name: form.name || "Nome do Produto",
+                      description: form.description || "Descrição...",
+                      price: form.price || "R$ 0,00",
+                      category: form.category || CATEGORIES[0],
+                      city: form.city || landlord.city || "Sua Cidade",
+                      image: form.image || "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80",
+                      landlordId: landlord.id,
+                      createdAt: new Date().toISOString()
+                    }} />
+                 </div>
+              </div>
             </div>
           </div>
         )}
