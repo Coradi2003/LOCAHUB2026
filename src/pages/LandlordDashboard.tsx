@@ -109,6 +109,19 @@ export default function LandlordDashboard() {
     setCropImage(null);
   };
 
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "");
+    if (!val) {
+      setForm({ ...form, price: "" });
+      return;
+    }
+    const formatted = (Number(val) / 100).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+    setForm({ ...form, price: formatted });
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!landlord || !form.name || !form.description || !form.city) return;
@@ -227,7 +240,7 @@ export default function LandlordDashboard() {
                 className="w-full px-3 py-2 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
               <input placeholder="Cidade / Região" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-              <input placeholder='Preço (ex: R$ 250,00 ou "Sob consulta")' value={form.price} onChange={e => setForm({ ...form, price: e.target.value })}
+              <input placeholder='Preço (ex: R$ 250,00)' value={form.price} onChange={handlePriceChange}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
               
               <div className="space-y-2 border border-border/60 rounded-xl p-3 bg-muted/20">

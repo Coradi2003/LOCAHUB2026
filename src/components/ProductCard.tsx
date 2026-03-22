@@ -31,6 +31,9 @@ export function ProductCard({ product }: { product: Product }) {
         <h3 className="font-display font-semibold text-card-foreground group-hover:text-primary transition-colors line-clamp-1">
           {product.name}
         </h3>
+        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+          {product.description}
+        </p>
         {landlord && (
           <div className="text-xs text-muted-foreground">
             Locador: <span className="font-medium text-foreground text-opacity-80">{landlord.name}</span>
