@@ -64,17 +64,19 @@ export default function AdminPage() {
     setProducts(updatedProducts);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    const { data: userId, error: signInError } = await store.signIn(user, pass);
+    if (signInError || !userId) {
+      setError("Usuário ou senha inválidos.");
+    } else {
       store.setAdminSession(true);
       setLoggedIn(true);
-    } else {
-      setError("Usuário ou senha inválidos.");
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await store.signOut();
     store.setAdminSession(false);
     setLoggedIn(false);
   };

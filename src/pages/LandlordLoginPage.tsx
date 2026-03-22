@@ -13,10 +13,13 @@ export default function LandlordLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const landlords = await store.getLandlords();
-    const landlord = landlords.find(l => l.email === email && l.password === password);
-    if (!landlord) { setError("E-mail ou senha inválidos."); return; }
-    store.setLandlordSession(landlord.id);
+    const { data: userId, error: signInError } = await store.signIn(email, password);
+    if (signInError || !userId) { 
+      setError(signInError || "Erro ao fazer login."); 
+      return; 
+    }
+    
+    store.setLandlordSession(userId);
     navigate("/painel-locador");
   };
 

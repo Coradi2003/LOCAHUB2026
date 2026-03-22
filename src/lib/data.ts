@@ -117,20 +117,47 @@ export const store = {
     }));
   },
   
-  addLandlord: async (l: Landlord) => {
-    const { error } = await supabase.from('landlords').insert([{
-      id: l.id,
+  signUpLandlord: async (l: Landlord) => {
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: l.email,
+      password: l.password,
+    });
+    
+    if (authError) return { error: authError.message };
+    if (!authData.user?.id) return { error: "Erro desconhecido ao criar auth." };
+
+    const { error: dbError } = await supabase.from('landlords').insert([{
+      id: authData.user.id,
       name: l.name,
       document: l.document,
       phone: l.phone,
       email: l.email,
-      password: l.password,
+      password: "auth-managed", 
       city: l.city,
       cep: l.cep,
       type: l.type,
       created_at: l.createdAt || new Date().toISOString()
     }]);
-    if (error) console.error("Error adding landlord:", error);
+
+    if (dbError) return { error: dbError.message };
+    return { data: authData.user.id };
+  },
+
+  signIn: async (email: string, pass: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (error) return { error: "E-mail ou senha inválidos." };
+    return { data: data.user?.id };
+  },
+
+  signOut: async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("locahub_landlord_session");
+    localStorage.removeItem("locahub_admin");
+  },
+
+  getCurrentSessionId: async () => {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.user?.id || null;
   },
 
   deleteLandlord: async (id: string) => {

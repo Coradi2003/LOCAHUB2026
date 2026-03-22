@@ -13,10 +13,10 @@ export default function LandlordDashboard() {
   const [form, setForm] = useState({ name: "", category: CATEGORIES[0], description: "", city: "", price: "", image: "" });
 
   useEffect(() => {
-    const id = store.getCurrentLandlordId();
-    if (!id) { navigate("/login-locador"); return; }
-
     async function load() {
+      const id = await store.getCurrentSessionId();
+      if (!id) { navigate("/login-locador"); return; }
+
       const [lands, prods] = await Promise.all([
         store.getLandlords(),
         store.getProducts()
@@ -93,8 +93,8 @@ export default function LandlordDashboard() {
     refreshProducts();
   };
 
-  const handleLogout = () => {
-    store.setLandlordSession(null);
+  const handleLogout = async () => {
+    await store.signOut();
     navigate("/login-locador");
   };
 

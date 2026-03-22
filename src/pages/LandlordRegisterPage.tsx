@@ -26,20 +26,22 @@ export default function LandlordRegisterPage() {
       return;
     }
 
-    const landlords = await store.getLandlords();
-    if (landlords.find(l => l.email === form.email)) {
-      setError("E-mail já cadastrado.");
-      return;
-    }
     const newLandlord: Landlord = {
-      id: `l${Date.now()}`,
+      id: "", 
       ...form,
       createdAt: new Date().toISOString(),
     };
     
-    await store.addLandlord(newLandlord);
-    store.setLandlordSession(newLandlord.id);
-    navigate("/painel-locador");
+    const { data: userId, error: signUpError } = await store.signUpLandlord(newLandlord);
+    if (signUpError) {
+      setError(signUpError);
+      return;
+    }
+    
+    if (userId) {
+      store.setLandlordSession(userId);
+      navigate("/painel-locador");
+    }
   };
 
   const set = (k: string, v: string) => setForm({ ...form, [k]: v });
