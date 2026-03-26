@@ -4,13 +4,12 @@ import { Users, Package, FileText, LogOut, Star, Edit, Trash2 } from "lucide-rea
 import { store } from "@/lib/data";
 import type { Product, Landlord, ClientForm } from "@/lib/data";
 
-const ADMIN_USER = "teste";
-const ADMIN_PASS = "teste";
+const ADMIN_EMAIL = "admin@locahub.com.br"; // Recommended admin email format
 
 export default function AdminPage() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(store.isAdminLoggedIn());
-  const [user, setUser] = useState("");
+  const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"landlords" | "products" | "forms">("landlords");
@@ -66,9 +65,10 @@ export default function AdminPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: userId, error: signInError } = await store.signIn(user, pass);
-    if (signInError || !userId) {
-      setError("Usuário ou senha inválidos.");
+    const { data: userId, error: signInError } = await store.signIn(email, pass);
+    if (signInError || !userId || email !== ADMIN_EMAIL) {
+      setError("Credenciais inválidas ou acesso não autorizado.");
+      store.signOut(); // Ensure we don't leave a partial session if it wasn't the admin
     } else {
       store.setAdminSession(true);
       setLoggedIn(true);
@@ -87,7 +87,7 @@ export default function AdminPage() {
         <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 rounded-xl border border-border/60 bg-card p-6">
           <h1 className="text-xl font-display font-bold text-center">Admin <span className="text-gradient">LocaHub</span></h1>
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
-          <input placeholder="Usuário" value={user} onChange={e => setUser(e.target.value)}
+          <input placeholder="E-mail do Administrador" type="email" value={email} onChange={e => setEmail(e.target.value)}
             className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
           <input placeholder="Senha" type="password" value={pass} onChange={e => setPass(e.target.value)}
             className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />

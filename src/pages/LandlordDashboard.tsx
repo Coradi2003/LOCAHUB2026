@@ -22,9 +22,9 @@ export default function LandlordDashboard() {
   useEffect(() => {
     async function load() {
       let id = await store.getCurrentSessionId();
-      if (!id) id = localStorage.getItem("locahub_landlord_session");
-
+      
       if (!id) { 
+        store.setLandlordSession(null); // Clear any lingering insecure local state
         navigate("/login-locador"); 
         return; 
       }
