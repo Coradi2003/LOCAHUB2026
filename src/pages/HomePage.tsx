@@ -72,8 +72,8 @@ export default function HomePage() {
             className="text-4xl sm:text-5xl md:text-7xl font-display font-bold leading-[0.95] tracking-tight opacity-0 animate-fade-up"
             style={{ animationDelay: "100ms" }}
           >
-            Tudo para sua{" "}
-            <span className="text-gradient">festa</span>
+            Tudo para{" "}
+            <span className="text-gradient">alugar</span>
             <br />em um só lugar
           </h1>
 
