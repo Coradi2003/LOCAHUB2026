@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { Search, ArrowRight, Sparkles, Shield, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ArrowRight, Sparkles, Shield, Zap } from "lucide-react";
 import heroTrampoline from "@/assets/hero-trampoline.png";
 import heroBilhar from "@/assets/hero-bilhar.png";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PublicHeader } from "@/components/PublicHeader";
 import { Footer } from "@/components/Footer";
@@ -25,15 +25,7 @@ export default function HomePage() {
     store.getProducts().then(setProducts);
   }, []);
 
-  const featured = products.filter(p => p.isFeatured).slice(0, 8);
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const scrollCarousel = (dir: "left" | "right") => {
-    if (!carouselRef.current) return;
-    const card = carouselRef.current.querySelector("[data-card]") as HTMLElement;
-    const width = card ? card.offsetWidth + 24 : 300;
-    carouselRef.current.scrollBy({ left: dir === "right" ? width : -width, behavior: "smooth" });
-  };
+  const featured = products.filter(p => p.isFeatured).slice(0, 4);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,70 +130,17 @@ export default function HomePage() {
               <h2 className="text-3xl font-display font-bold">
                 Produtos em <span className="text-gradient">Destaque</span>
               </h2>
-              <div className="flex items-center gap-3">
-                {featured.length > 4 && (
-                  <div className="hidden sm:flex items-center gap-2">
-                    <button
-                      onClick={() => scrollCarousel("left")}
-                      className="w-9 h-9 rounded-full border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all active:scale-90"
-                      aria-label="Anterior"
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      onClick={() => scrollCarousel("right")}
-                      className="w-9 h-9 rounded-full border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all active:scale-90"
-                      aria-label="Próximo"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                )}
-                <Link to="/produtos" className="text-sm text-primary hover:underline hidden sm:inline">
-                  Ver todos →
-                </Link>
-              </div>
+              <Link to="/produtos" className="text-sm text-primary hover:underline hidden sm:inline">
+                Ver todos →
+              </Link>
             </div>
           </ScrollReveal>
-
-          {/* Carousel */}
-          <div className="relative">
-            <div
-              ref={carouselRef}
-              className="flex gap-6 overflow-x-auto scroll-smooth pb-2"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {featured.map((p, i) => (
-                <ScrollReveal key={p.id} delay={i * 80}>
-                  <div
-                    data-card
-                    className="flex-shrink-0 w-[280px] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
-                  >
-                    <ProductCard product={p} />
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-
-            {/* Mobile arrow buttons */}
-            {featured.length > 1 && (
-              <div className="flex sm:hidden items-center justify-center gap-4 mt-6">
-                <button
-                  onClick={() => scrollCarousel("left")}
-                  className="w-10 h-10 rounded-full border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground transition-all active:scale-90"
-                  aria-label="Anterior"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <button
-                  onClick={() => scrollCarousel("right")}
-                  className="w-10 h-10 rounded-full border border-border/60 bg-card flex items-center justify-center text-muted-foreground hover:text-foreground transition-all active:scale-90"
-                  aria-label="Próximo"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-            )}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featured.map((p, i) => (
+              <ScrollReveal key={p.id} delay={i * 80}>
+                <ProductCard product={p} />
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
