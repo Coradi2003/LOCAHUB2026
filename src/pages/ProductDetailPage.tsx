@@ -14,7 +14,7 @@ export default function ProductDetailPage() {
   const [landlord, setLandlord] = useState<Landlord | null | undefined>(undefined);
 
   const [formSent, setFormSent] = useState(false);
-  const [form, setForm] = useState({ fullName: "", cpf: "", cep: "", address: "" });
+  const [form, setForm] = useState({ fullName: "", cpf: "", phone: "", cep: "", address: "", houseNumber: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -55,8 +55,14 @@ export default function ProductDetailPage() {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = "Nome obrigatório";
     if (!form.cpf.trim() || !isValidCPF(form.cpf)) e.cpf = "CPF inválido";
+    
+    const cleanPhone = form.phone.replace(/\D/g, "");
+    if (!form.phone.trim() || cleanPhone.length < 10) e.phone = "Telefone obrigatório (com DDD)";
+    
     if (!form.cep.trim() || form.cep.replace(/\D/g, "").length < 8) e.cep = "CEP obrigatório";
     if (!form.address.trim()) e.address = "Endereço obrigatório";
+    if (!form.houseNumber.trim()) e.houseNumber = "Número obrigatório";
+    
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -93,6 +99,19 @@ export default function ProductDetailPage() {
     }
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 11) val = val.substring(0, 11);
+    
+    if (val.length > 2) {
+      val = `(${val.substring(0, 2)}) ${val.substring(2)}`;
+    }
+    if (val.length > 9) {
+      val = `${val.substring(0, 10)}-${val.substring(10)}`;
+    }
+    setForm(prev => ({ ...prev, phone: val }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -101,7 +120,7 @@ export default function ProductDetailPage() {
       id: Date.now().toString(),
       fullName: form.fullName.trim(),
       cpf: form.cpf.trim(),
-      address: form.address.trim(),
+      address: `${form.address.trim()}, Nº ${form.houseNumber.trim()} (Tel: ${form.phone.trim()})`,
       productId: product.id,
       productName: product.name,
       createdAt: new Date().toISOString(),
@@ -194,6 +213,15 @@ export default function ProductDetailPage() {
                       </div>
                       <div>
                         <input
+                          placeholder="Telefone / WhatsApp (com DDD)"
+                          value={form.phone}
+                          onChange={handlePhoneChange}
+                          className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                        {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
+                      </div>
+                      <div>
+                        <input
                           placeholder="CEP (00000-000)"
                           value={form.cep}
                           onChange={handleCepChange}
@@ -201,14 +229,25 @@ export default function ProductDetailPage() {
                         />
                         {errors.cep && <p className="text-xs text-destructive mt-1">{errors.cep}</p>}
                       </div>
-                      <div>
-                        <input
-                          placeholder="Endereço completo (com número)"
-                          value={form.address}
-                          onChange={e => setForm({ ...form, address: e.target.value })}
-                          className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
-                        {errors.address && <p className="text-xs text-destructive mt-1">{errors.address}</p>}
+                      <div className="flex gap-3">
+                        <div className="flex-[3]">
+                          <input
+                            placeholder="Nome da Rua / Bairro"
+                            value={form.address}
+                            onChange={e => setForm({ ...form, address: e.target.value })}
+                            className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          />
+                          {errors.address && <p className="text-xs text-destructive mt-1">{errors.address}</p>}
+                        </div>
+                        <div className="flex-1">
+                          <input
+                            placeholder="Nº"
+                            value={form.houseNumber}
+                            onChange={e => setForm({ ...form, houseNumber: e.target.value })}
+                            className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          />
+                          {errors.houseNumber && <p className="text-xs text-destructive mt-1">{errors.houseNumber}</p>}
+                        </div>
                       </div>
                       <button
                         type="submit"
