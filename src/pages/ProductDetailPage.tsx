@@ -109,7 +109,18 @@ export default function ProductDetailPage() {
     store.addForm(entry).then(() => setFormSent(true));
   };
 
-  const whatsappUrl = `https://wa.me/5541999995443?text=${encodeURIComponent(
+  let waNumber = "5541999995443";
+  if (landlord?.phone) {
+    let cleanPhone = landlord.phone.replace(/\D/g, "");
+    if (cleanPhone.length === 10 || cleanPhone.length === 11) {
+      cleanPhone = "55" + cleanPhone;
+    }
+    if (cleanPhone.length >= 12) {
+      waNumber = cleanPhone;
+    }
+  }
+
+  const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
     "Olá, acabei de preencher meus dados na LocaHub e tenho interesse em um produto. Pode me ajudar?"
   )}`;
 

@@ -21,6 +21,12 @@ export default function LandlordRegisterPage() {
       return;
     }
 
+    const cleanPhone = form.phone.replace(/\D/g, "");
+    if (cleanPhone.length < 10) {
+      setError("Por favor, insira um número de WhatsApp válido com DDD.");
+      return;
+    }
+
     if (form.type === "pf" && !isValidCPF(form.document)) {
       setError("Por favor, insira um CPF válido.");
       return;
@@ -108,7 +114,7 @@ export default function LandlordRegisterPage() {
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
               <input placeholder="CPF" value={form.document} onChange={handleDocumentChange}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-              <input placeholder="Telefone" value={form.phone} onChange={e => set("phone", e.target.value)}
+              <input placeholder="WhatsApp (com DDD, ex: 11999999999)" value={form.phone} onChange={e => set("phone", e.target.value)}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
               <input placeholder="E-mail" type="email" value={form.email} onChange={e => set("email", e.target.value)}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
