@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PublicHeader } from "@/components/PublicHeader";
 import { Footer } from "@/components/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -45,7 +45,7 @@ export default function LandlordLoginPage() {
                 Entrar
               </button>
               <p className="text-xs text-muted-foreground text-center">
-                Não tem conta? <Link to="/cadastro-locador" className="text-primary hover:underline">Cadastre-se</Link>
+                Não tem acesso? Entre em contato com o administrador.
               </p>
             </form>
           </ScrollReveal>

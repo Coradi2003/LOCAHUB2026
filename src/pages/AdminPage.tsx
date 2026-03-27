@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, Package, FileText, LogOut, Star, Edit, Trash2 } from "lucide-react";
+import { Users, Package, FileText, LogOut, Star, Edit, Trash2, Plus } from "lucide-react";
 import { store } from "@/lib/data";
 import type { Product, Landlord, ClientForm } from "@/lib/data";
+import { isValidCPF } from "@/lib/utils";
 
 const ADMIN_EMAIL = "admin@locahub.com.br"; // Recommended admin email format
 
@@ -17,6 +18,11 @@ export default function AdminPage() {
   const [landlords, setLandlords] = useState<Landlord[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [forms, setForms] = useState<ClientForm[]>([]);
+  const [showAddLandlord, setShowAddLandlord] = useState(false);
+  const [landlordForm, setLandlordForm] = useState({
+    name: "", document: "", phone: "", email: "", password: "", city: "", cep: "", type: "pf" as "pf" | "pj",
+  });
+  const [landlordError, setLandlordError] = useState("");
 
   useEffect(() => {
     if (loggedIn) {
@@ -61,6 +67,88 @@ export default function AdminPage() {
 
     const updatedProducts = products.filter(p => p.landlordId !== id);
     setProducts(updatedProducts);
+  };
+
+  const handleAddLandlord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLandlordError("");
+
+    if (!landlordForm.name || !landlordForm.document || !landlordForm.phone || !landlordForm.email || !landlordForm.password || !landlordForm.city) {
+      setLandlordError("Preencha todos os campos.");
+      return;
+    }
+
+    const cleanPhone = landlordForm.phone.replace(/\D/g, "");
+    if (cleanPhone.length < 10) {
+      setLandlordError("Por favor, insira um número de WhatsApp válido com DDD.");
+      return;
+    }
+
+    if (landlordForm.type === "pf" && !isValidCPF(landlordForm.document)) {
+      setLandlordError("Por favor, insira um CPF válido.");
+      return;
+    }
+
+    const newLandlord: Landlord = {
+      id: "",
+      ...landlordForm,
+      createdAt: new Date().toISOString(),
+    };
+
+    const { data: userId, error: signUpError } = await store.signUpLandlord(newLandlord);
+    if (signUpError) {
+      setLandlordError(signUpError);
+      return;
+    }
+
+    if (userId) {
+      const updatedLandlords = await store.getLandlords();
+      setLandlords(updatedLandlords);
+      setShowAddLandlord(false);
+      setLandlordForm({
+        name: "", document: "", phone: "", email: "", password: "", city: "", cep: "", type: "pf",
+      });
+    }
+  };
+
+  const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 8) val = val.substring(0, 8);
+    const formatted = val.replace(/^(\d{5})(\d)/, "$1-$2");
+    
+    setLandlordForm(prev => ({ ...prev, cep: formatted }));
+
+    if (val.length === 8) {
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${val}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          setLandlordForm(prev => ({
+            ...prev,
+            city: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
+          }));
+        }
+      } catch (err) {
+        console.error("Erro ao buscar CEP", err);
+      }
+    }
+  };
+
+  const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, "");
+    if (landlordForm.type === "pf") {
+      val = val.substring(0, 11);
+      val = val.replace(/(\d{3})(\d)/, "$1.$2");
+      val = val.replace(/(\d{3})(\d)/, "$1.$2");
+      val = val.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    } else {
+      val = val.substring(0, 14);
+      val = val.replace(/^(\d{2})(\d)/, "$1.$2");
+      val = val.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+      val = val.replace(/\.(\d{3})(\d)/, ".$1/$2");
+      val = val.replace(/(\d{4})(\d)/, "$1-$2");
+    }
+    setLandlordForm(prev => ({ ...prev, document: val }));
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -138,35 +226,106 @@ export default function AdminPage() {
 
         {/* Landlords */}
         {tab === "landlords" && (
-          <div className="overflow-x-auto rounded-xl border border-border/50">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-muted/30 text-muted-foreground text-left">
-                  <th className="p-3 font-medium">Nome</th>
-                  <th className="p-3 font-medium">Tipo</th>
-                  <th className="p-3 font-medium">Documento</th>
-                  <th className="p-3 font-medium">E-mail</th>
-                  <th className="p-3 font-medium">Cidade</th>
-                  <th className="p-3 font-medium text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {landlords.map(l => (
-                  <tr key={l.id} className="border-t border-border/30 hover:bg-muted/10">
-                    <td className="p-3">{l.name}</td>
-                    <td className="p-3 text-muted-foreground">{l.type === "pf" ? "PF" : "PJ"}</td>
-                    <td className="p-3 text-muted-foreground">{l.document}</td>
-                    <td className="p-3 text-muted-foreground">{l.email}</td>
-                    <td className="p-3 text-muted-foreground">{l.city}</td>
-                    <td className="p-3 flex items-center justify-end gap-1">
-                      <button onClick={() => deleteLandlord(l.id)} title="Excluir Locador" className="p-1.5 text-destructive hover:bg-destructive/10 rounded-md transition-colors">
-                         <Trash2 size={16} strokeWidth={2.5} />
-                      </button>
-                    </td>
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowAddLandlord(!showAddLandlord)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity active:scale-[0.97]"
+              >
+                <Plus size={16} />
+                {showAddLandlord ? "Cancelar" : "Adicionar Locador"}
+              </button>
+            </div>
+
+            {showAddLandlord && (
+              <form onSubmit={handleAddLandlord} className="rounded-xl border border-border/60 bg-card p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Novo Locador</h3>
+                {landlordError && <p className="text-sm text-destructive">{landlordError}</p>}
+
+                <input
+                  placeholder="Nome completo"
+                  value={landlordForm.name}
+                  onChange={e => setLandlordForm({ ...landlordForm, name: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <input
+                  placeholder="CPF"
+                  value={landlordForm.document}
+                  onChange={handleDocumentChange}
+                  className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <input
+                  placeholder="WhatsApp (com DDD, ex: 11999999999)"
+                  value={landlordForm.phone}
+                  onChange={e => setLandlordForm({ ...landlordForm, phone: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <input
+                  placeholder="E-mail"
+                  type="email"
+                  value={landlordForm.email}
+                  onChange={e => setLandlordForm({ ...landlordForm, email: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <input
+                  placeholder="Senha"
+                  type="password"
+                  value={landlordForm.password}
+                  onChange={e => setLandlordForm({ ...landlordForm, password: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <input
+                  placeholder="CEP (00000-000)"
+                  value={landlordForm.cep}
+                  onChange={handleCepChange}
+                  className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <input
+                  placeholder="Endereço completo"
+                  value={landlordForm.city}
+                  onChange={e => setLandlordForm({ ...landlordForm, city: e.target.value })}
+                  className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+
+                <button
+                  type="submit"
+                  className="w-full h-11 rounded-xl bg-gradient-party text-primary-foreground font-semibold hover:opacity-90 transition-opacity active:scale-[0.97]"
+                >
+                  Cadastrar Locador
+                </button>
+              </form>
+            )}
+
+            <div className="overflow-x-auto rounded-xl border border-border/50">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-muted/30 text-muted-foreground text-left">
+                    <th className="p-3 font-medium">Nome</th>
+                    <th className="p-3 font-medium">Tipo</th>
+                    <th className="p-3 font-medium">Documento</th>
+                    <th className="p-3 font-medium">E-mail</th>
+                    <th className="p-3 font-medium">Cidade</th>
+                    <th className="p-3 font-medium text-right">Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {landlords.map(l => (
+                    <tr key={l.id} className="border-t border-border/30 hover:bg-muted/10">
+                      <td className="p-3">{l.name}</td>
+                      <td className="p-3 text-muted-foreground">{l.type === "pf" ? "PF" : "PJ"}</td>
+                      <td className="p-3 text-muted-foreground">{l.document}</td>
+                      <td className="p-3 text-muted-foreground">{l.email}</td>
+                      <td className="p-3 text-muted-foreground">{l.city}</td>
+                      <td className="p-3 flex items-center justify-end gap-1">
+                        <button onClick={() => deleteLandlord(l.id)} title="Excluir Locador" className="p-1.5 text-destructive hover:bg-destructive/10 rounded-md transition-colors">
+                           <Trash2 size={16} strokeWidth={2.5} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
