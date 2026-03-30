@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <span className="text-xl font-bold font-display text-gradient">LocaHub</span>
+            <span className="text-xl font-bold font-display text-gradient">LokaHub</span>
             <p className="text-sm text-muted-foreground mt-1">Conectando você à diversão perfeita.</p>
           </div>
           <nav className="flex gap-6 text-sm text-muted-foreground">
@@ -16,7 +16,7 @@ export function Footer() {
           </nav>
         </div>
         <div className="text-center text-xs text-muted-foreground mt-8">
-          © {new Date().getFullYear()} LocaHub. Todos os direitos reservados.
+          © {new Date().getFullYear()} LokaHub. Todos os direitos reservados.
         </div>
       </div>
     </footer>

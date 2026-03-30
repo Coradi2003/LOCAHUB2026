@@ -140,7 +140,7 @@ export default function ProductDetailPage() {
   }
 
   const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
-    "Olá, acabei de preencher meus dados na LocaHub e tenho interesse em um produto. Pode me ajudar?"
+    "Olá, acabei de preencher meus dados na LokaHub e tenho interesse em um produto. Pode me ajudar?"
   )}`;
 
   return (

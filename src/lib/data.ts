@@ -151,8 +151,8 @@ export const store = {
 
   signOut: async () => {
     await supabase.auth.signOut();
-    localStorage.removeItem("locahub_landlord_session");
-    localStorage.removeItem("locahub_admin");
+    localStorage.removeItem("lokahub_landlord_session");
+    localStorage.removeItem("lokahub_admin");
   },
 
   getCurrentSessionId: async () => {
@@ -192,15 +192,15 @@ export const store = {
 
   // Auth helpers (still using localStorage for local session tracking, but can be synced properly later)
   getCurrentLandlordId: (): string | null => {
-    return localStorage.getItem("locahub_landlord_session");
+    return localStorage.getItem("lokahub_landlord_session");
   },
   setLandlordSession: (id: string | null) => {
-    if (id) localStorage.setItem("locahub_landlord_session", id);
-    else localStorage.removeItem("locahub_landlord_session");
+    if (id) localStorage.setItem("lokahub_landlord_session", id);
+    else localStorage.removeItem("lokahub_landlord_session");
   },
-  isAdminLoggedIn: () => localStorage.getItem("locahub_admin") === "true",
+  isAdminLoggedIn: () => localStorage.getItem("lokahub_admin") === "true",
   setAdminSession: (v: boolean) => {
-    if (v) localStorage.setItem("locahub_admin", "true");
-    else localStorage.removeItem("locahub_admin");
+    if (v) localStorage.setItem("lokahub_admin", "true");
+    else localStorage.removeItem("lokahub_admin");
   }
 };

@@ -167,7 +167,7 @@ export default function LandlordDashboard() {
       {/* Panel header */}
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="container flex items-center justify-between h-14">
-          <Link to="/" className="font-display font-bold text-gradient text-lg">LocaHub</Link>
+          <Link to="/" className="font-display font-bold text-gradient text-lg">LokaHub</Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground hidden sm:inline">Olá, {landlord.name}</span>
             <button onClick={handleLogout} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">

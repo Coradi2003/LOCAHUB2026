@@ -5,7 +5,7 @@ import { store } from "@/lib/data";
 import type { Product, Landlord, ClientForm } from "@/lib/data";
 import { isValidCPF } from "@/lib/utils";
 
-const ADMIN_EMAIL = "admin@locahub.com.br"; // Recommended admin email format
+const ADMIN_EMAIL = "admin@lokahub.com.br"; // Recommended admin email format
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -173,7 +173,7 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 rounded-xl border border-border/60 bg-card p-6">
-          <h1 className="text-xl font-display font-bold text-center">Admin <span className="text-gradient">LocaHub</span></h1>
+          <h1 className="text-xl font-display font-bold text-center">Admin <span className="text-gradient">LokaHub</span></h1>
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
           <input placeholder="E-mail do Administrador" type="email" value={email} onChange={e => setEmail(e.target.value)}
             className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
@@ -197,7 +197,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="container flex items-center justify-between h-14">
-          <span className="font-display font-bold text-gradient text-lg">LocaHub Admin</span>
+          <span className="font-display font-bold text-gradient text-lg">LokaHub Admin</span>
           <button onClick={handleLogout} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
             <LogOut size={14} /> Sair
           </button>
