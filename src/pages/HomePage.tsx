@@ -37,13 +37,13 @@ export default function HomePage() {
       <PublicHeader />
 
       {/* Hero */}
-      <section className="relative min-h-[46vh] py-10 flex items-center justify-center overflow-hidden bg-slate-950 dark">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#050a15] via-[#0a0515] to-[#02050a]" />
+      <section className="relative min-h-[46vh] py-10 flex items-center justify-center overflow-hidden bg-yellow-500 dark">
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-400 to-orange-500" />
         
-        <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] min-w-[500px] bg-purple-600/30 rounded-full blur-[120px] mix-blend-screen" />
-        <div className="absolute -bottom-[20%] -right-[10%] w-[55vw] h-[55vw] min-w-[600px] bg-blue-600/20 rounded-full blur-[140px] mix-blend-screen" />
-        <div className="absolute top-[20%] right-[15%] w-[35vw] h-[35vw] min-w-[400px] bg-cyan-500/15 rounded-full blur-[100px] mix-blend-screen" />
-        <div className="absolute bottom-[10%] left-[20%] w-[40vw] h-[40vw] min-w-[400px] bg-indigo-500/20 rounded-full blur-[110px] mix-blend-screen" />
+        <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] min-w-[500px] bg-yellow-300/40 rounded-full blur-[120px] mix-blend-screen" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[55vw] h-[55vw] min-w-[600px] bg-orange-500/30 rounded-full blur-[140px] mix-blend-screen" />
+        <div className="absolute top-[20%] right-[15%] w-[35vw] h-[35vw] min-w-[400px] bg-orange-400/25 rounded-full blur-[100px] mix-blend-screen" />
+        <div className="absolute bottom-[10%] left-[20%] w-[40vw] h-[40vw] min-w-[400px] bg-yellow-500/30 rounded-full blur-[110px] mix-blend-screen" />
         
         <div className="absolute inset-0 bg-background/5 backdrop-blur-3xl mix-blend-overlay" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
@@ -53,13 +53,13 @@ export default function HomePage() {
           src={heroTrampoline}
           alt=""
           aria-hidden="true"
-          className="absolute left-[-4%] bottom-[5%] w-[28vw] max-w-[380px] opacity-20 blur-[2px] pointer-events-none select-none hidden lg:block drop-shadow-[0_0_40px_hsl(270_80%_60%/0.4)]"
+          className="absolute left-[-4%] bottom-[5%] w-[28vw] max-w-[380px] opacity-20 blur-[2px] pointer-events-none select-none hidden lg:block drop-shadow-[0_0_40px_hsl(45_100%_50%/0.4)]"
         />
         <img
           src={heroBilhar}
           alt=""
           aria-hidden="true"
-          className="absolute right-[-2%] bottom-[2%] w-[26vw] max-w-[360px] opacity-20 blur-[2px] pointer-events-none select-none hidden lg:block drop-shadow-[0_0_40px_hsl(200_90%_50%/0.4)]"
+          className="absolute right-[-2%] bottom-[2%] w-[26vw] max-w-[360px] opacity-20 blur-[2px] pointer-events-none select-none hidden lg:block drop-shadow-[0_0_40px_hsl(30_100%_50%/0.4)]"
         />
 
         <div className="relative container text-center space-y-8 pt-8">
