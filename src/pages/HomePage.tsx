@@ -48,20 +48,6 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-background/5 backdrop-blur-3xl mix-blend-overlay" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
 
-        {/* Decorative product images */}
-        <img
-          src={heroTrampoline}
-          alt=""
-          aria-hidden="true"
-          className="absolute left-[-4%] bottom-[5%] w-[28vw] max-w-[380px] opacity-20 blur-[2px] pointer-events-none select-none hidden lg:block drop-shadow-[0_0_40px_hsl(45_100%_50%/0.4)]"
-        />
-        <img
-          src={heroBilhar}
-          alt=""
-          aria-hidden="true"
-          className="absolute right-[-2%] bottom-[2%] w-[26vw] max-w-[360px] opacity-20 blur-[2px] pointer-events-none select-none hidden lg:block drop-shadow-[0_0_40px_hsl(30_100%_50%/0.4)]"
-        />
-
         <div className="relative container text-center space-y-8 pt-8">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium animate-fade-up">
             <Sparkles size={14} />
@@ -73,12 +59,12 @@ export default function HomePage() {
             style={{ animationDelay: "100ms" }}
           >
             Tudo para{" "}
-            <span className="text-gradient">alugar</span>
+            <span className="text-gradient">locação</span>
             <br />em um só lugar
           </h1>
 
           <p
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-up"
+            className="text-lg md:text-xl text-white max-w-2xl mx-auto opacity-0 animate-fade-up"
             style={{ animationDelay: "200ms" }}
           >
             Encontre camas elásticas, mesas de jogos, infláveis e muito mais.
