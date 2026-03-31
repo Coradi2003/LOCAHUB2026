@@ -7,6 +7,8 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { store } from "@/lib/data";
 import type { ClientForm, Product, Landlord } from "@/lib/data";
 import { isValidCPF } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -16,6 +18,7 @@ export default function ProductDetailPage() {
   const [formSent, setFormSent] = useState(false);
   const [form, setForm] = useState({ fullName: "", cpf: "", phone: "", cep: "", address: "", houseNumber: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -62,6 +65,7 @@ export default function ProductDetailPage() {
     if (!form.cep.trim() || form.cep.replace(/\D/g, "").length < 8) e.cep = "CEP obrigatório";
     if (!form.address.trim()) e.address = "Endereço obrigatório";
     if (!form.houseNumber.trim()) e.houseNumber = "Número obrigatório";
+    if (!agreedToTerms) e.terms = "Você deve concordar com os Termos de Uso";
     
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -249,6 +253,115 @@ export default function ProductDetailPage() {
                           {errors.houseNumber && <p className="text-xs text-destructive mt-1">{errors.houseNumber}</p>}
                         </div>
                       </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <Checkbox 
+                            id="terms" 
+                            checked={agreedToTerms}
+                            onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                            className="mt-0.5"
+                          />
+                          <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                            Li e concordo com os{" "}
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <button type="button" className="text-primary hover:underline font-medium">
+                                  Termos de Uso
+                                </button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>Termos de Uso - LOKAHUB</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 text-sm text-muted-foreground">
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">1. ACEITAÇÃO DOS TERMOS</h3>
+                                    <p>Ao acessar e utilizar a plataforma LOKAHUB, o usuário declara que leu, compreendeu e concorda integralmente com os presentes Termos de Uso, bem como com a legislação aplicável.</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">2. OBJETO DA PLATAFORMA</h3>
+                                    <p>A LOKAHUB é uma plataforma digital que atua exclusivamente como intermediadora entre locadores (prestadores de serviços/produtos) e clientes interessados na contratação. A plataforma disponibiliza o ambiente tecnológico para facilitar o contato, divulgação e negociação entre as partes.</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">3. NATUREZA DA INTERMEDIAÇÃO</h3>
+                                    <p>A LOKAHUB não participa da relação comercial final, não sendo parte integrante das negociações, contratos, entregas ou execuções dos serviços/produtos ofertados.</p>
+                                    <p className="mt-2">Dessa forma, fica expressamente estabelecido que:</p>
+                                    <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+                                      <li>A LOKAHUB atua única e exclusivamente como intermediadora digital;</li>
+                                      <li>A plataforma não realiza vendas diretas;</li>
+                                      <li>Não há vínculo empregatício, societário ou de representação entre a LOKAHUB e os locadores.</li>
+                                    </ul>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">4. RESPONSABILIDADE PELAS VENDAS E SERVIÇOS</h3>
+                                    <p>Toda e qualquer transação realizada por meio da plataforma é de total e exclusiva responsabilidade do locador e do cliente.</p>
+                                    <p className="mt-2">A LOKAHUB não se responsabiliza, em hipótese alguma, por:</p>
+                                    <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+                                      <li>Qualidade, entrega, execução ou cumprimento dos serviços/produtos ofertados;</li>
+                                      <li>Negociações realizadas entre as partes;</li>
+                                      <li>Pagamentos, reembolsos, cancelamentos ou inadimplência;</li>
+                                      <li>Informações fornecidas pelos locadores;</li>
+                                      <li>Danos diretos ou indiretos decorrentes das transações realizadas.</li>
+                                    </ul>
+                                    <p className="mt-2">O locador é o único responsável por:</p>
+                                    <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+                                      <li>Cumprir com o que foi ofertado ao cliente;</li>
+                                      <li>Garantir a veracidade das informações;</li>
+                                      <li>Respeitar prazos, condições e legislação vigente.</li>
+                                    </ul>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">5. RESPONSABILIDADE DO CLIENTE</h3>
+                                    <p>O cliente é responsável por:</p>
+                                    <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+                                      <li>Avaliar as informações do locador antes de contratar;</li>
+                                      <li>Negociar diretamente as condições do serviço/produto;</li>
+                                      <li>Verificar a idoneidade do locador.</li>
+                                    </ul>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">6. LIMITAÇÃO DE RESPONSABILIDADE</h3>
+                                    <p>A LOKAHUB não garante resultados, lucros, qualidade ou satisfação nas transações realizadas entre usuários, sendo sua responsabilidade limitada apenas à disponibilização da plataforma.</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">7. USO DA PLATAFORMA</h3>
+                                    <p>Os usuários se comprometem a utilizar a LOKAHUB de forma ética, legal e de boa-fé, sendo vedado:</p>
+                                    <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+                                      <li>Inserir informações falsas ou enganosas;</li>
+                                      <li>Utilizar a plataforma para práticas ilícitas;</li>
+                                      <li>Violar direitos de terceiros.</li>
+                                    </ul>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">8. ALTERAÇÕES DOS TERMOS</h3>
+                                    <p>A LOKAHUB poderá, a qualquer momento, modificar estes Termos de Uso, sendo responsabilidade do usuário revisá-los periodicamente.</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold text-foreground mb-2">9. DISPOSIÇÕES FINAIS</h3>
+                                    <p>Estes Termos são regidos pelas leis brasileiras. Qualquer controvérsia será resolvida no foro da comarca competente, conforme legislação vigente.</p>
+                                  </div>
+                                  
+                                  <div className="pt-4 border-t border-border">
+                                    <p className="text-center font-medium text-foreground">LOKAHUB – Plataforma intermediadora. As transações são de responsabilidade exclusiva entre locador e cliente.</p>
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                            {" "}e Política de Privacidade.
+                          </label>
+                        </div>
+                        {errors.terms && <p className="text-xs text-destructive">{errors.terms}</p>}
+                      </div>
+                      
                       <button
                         type="submit"
                         className="w-full h-11 rounded-xl bg-gradient-party text-primary-foreground font-semibold hover:opacity-90 transition-opacity active:scale-[0.97]"
