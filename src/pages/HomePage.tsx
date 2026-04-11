@@ -1,14 +1,13 @@
 import { Link } from "react-router-dom";
 import { Search, ArrowRight, Sparkles, Shield, Zap } from "lucide-react";
-import heroTrampoline from "@/assets/hero-trampoline.png";
-import heroBilhar from "@/assets/hero-bilhar.png";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PublicHeader } from "@/components/PublicHeader";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { store, type Product, CATEGORIES, CATEGORY_ICONS } from "@/lib/data";
+import { CATEGORIES, CATEGORY_ICONS } from "@/lib/data";
+import { useProducts } from "@/hooks/use-data";
 
 const STEPS = [
   { icon: Search, title: "Encontre", desc: "Busque o produto ideal para seu evento nos filtros por categoria e região." },
@@ -18,12 +17,10 @@ const STEPS = [
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    store.getProducts().then(setProducts);
-  }, []);
+  
+  // Usa hook com cache - evita requests duplicados
+  const { data: products = [] } = useProducts();
 
   const featured = products.filter(p => p.isFeatured).slice(0, 4);
 

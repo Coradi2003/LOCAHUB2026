@@ -9,6 +9,7 @@ import type { ClientForm, Product, Landlord } from "@/lib/data";
 import { isValidCPF } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -85,23 +86,28 @@ export default function ProductDetailPage() {
     if (val.length > 8) val = val.substring(0, 8);
     const formatted = val.replace(/^(\d{5})(\d)/, "$1-$2");
     setForm(prev => ({ ...prev, cep: formatted }));
-
-    if (val.length === 8) {
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${val}/json/`);
-        const data = await res.json();
-        if (!data.erro) {
-          setForm(prev => ({
-            ...prev,
-            address: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
-          }));
-          setErrors(prev => ({ ...prev, address: "" }));
-        }
-      } catch (err) {
-        console.error("Erro ao buscar CEP", err);
-      }
-    }
   };
+
+  // Debounce do CEP para evitar múltiplas chamadas
+  const debouncedCep = useDebounce(form.cep, 800);
+
+  useEffect(() => {
+    const val = debouncedCep.replace(/\D/g, "");
+    if (val.length === 8) {
+      fetch(`https://viacep.com.br/ws/${val}/json/`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.erro) {
+            setForm(prev => ({
+              ...prev,
+              address: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
+            }));
+            setErrors(prev => ({ ...prev, address: "" }));
+          }
+        })
+        .catch(err => console.error("Erro ao buscar CEP", err));
+    }
+  }, [debouncedCep]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");

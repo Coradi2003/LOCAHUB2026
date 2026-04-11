@@ -1,11 +1,12 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { store, CATEGORIES, type Product } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import { useProducts } from "@/hooks/use-data";
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,11 +15,9 @@ export default function ProductsPage() {
 
   const [selectedCat, setSelectedCat] = useState(initialCat);
   const [query, setQuery] = useState(initialQ);
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    store.getProducts().then(setProducts);
-  }, []);
+  
+  // Usa hook com cache - evita requests duplicados
+  const { data: products = [] } = useProducts();
 
   const filtered = useMemo(() => {
     return products.filter(p => {

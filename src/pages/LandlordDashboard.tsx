@@ -5,11 +5,13 @@ import Cropper from "react-easy-crop";
 import { store, CATEGORIES } from "@/lib/data";
 import type { Product, Landlord } from "@/lib/data";
 import { ProductCard } from "@/components/ProductCard";
+import { useProducts } from "@/hooks/use-data";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LandlordDashboard() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [landlord, setLandlord] = useState<Landlord | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState({ name: "", category: CATEGORIES[0], description: "", city: "", price: "", image: "" });
@@ -19,20 +21,21 @@ export default function LandlordDashboard() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
+  // Usa hook com cache
+  const { data: allProducts = [] } = useProducts();
+  const products = landlord ? allProducts.filter(p => p.landlordId === landlord.id) : [];
+
   useEffect(() => {
     async function load() {
       let id = await store.getCurrentSessionId();
       
       if (!id) { 
-        store.setLandlordSession(null); // Clear any lingering insecure local state
+        store.setLandlordSession(null);
         navigate("/login-locador"); 
         return; 
       }
 
-      const [lands, prods] = await Promise.all([
-        store.getLandlords(),
-        store.getProducts()
-      ]);
+      const lands = await store.getLandlords();
       const mLand = lands.find(x => x.id === id);
       
       if (!mLand) { 
@@ -44,16 +47,9 @@ export default function LandlordDashboard() {
       }
       
       setLandlord(mLand);
-      setProducts(prods.filter(p => p.landlordId === id));
     }
     load();
   }, [navigate]);
-
-  const refreshProducts = async () => {
-    if (!landlord) return;
-    const all = await store.getProducts();
-    setProducts(all.filter(p => p.landlordId === landlord.id));
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,10 +134,10 @@ export default function LandlordDashboard() {
       });
     }
     
+    queryClient.invalidateQueries({ queryKey: ["products"] });
     setShowForm(false);
     setEditing(null);
     setForm({ name: "", category: CATEGORIES[0], description: "", city: "", price: "", image: "" });
-    refreshProducts();
   };
 
   const handleEdit = (p: Product) => {
@@ -152,7 +148,7 @@ export default function LandlordDashboard() {
 
   const handleDelete = async (id: string) => {
     await store.deleteProduct(id);
-    refreshProducts();
+    queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   const handleLogout = async () => {

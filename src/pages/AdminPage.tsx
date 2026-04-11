@@ -4,47 +4,43 @@ import { Users, Package, FileText, LogOut, Star, Edit, Trash2, Plus } from "luci
 import { store } from "@/lib/data";
 import type { Product, Landlord, ClientForm } from "@/lib/data";
 import { isValidCPF } from "@/lib/utils";
+import { useProducts, useLandlords, useForms } from "@/hooks/use-data";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ADMIN_EMAIL = "admin@lokahub.com.br"; // Recommended admin email format
 
 export default function AdminPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [loggedIn, setLoggedIn] = useState(store.isAdminLoggedIn());
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"landlords" | "products" | "forms">("landlords");
 
-  const [landlords, setLandlords] = useState<Landlord[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [forms, setForms] = useState<ClientForm[]>([]);
+  // Usa hooks com cache
+  const { data: landlords = [], refetch: refetchLandlords } = useLandlords();
+  const { data: products = [], refetch: refetchProducts } = useProducts();
+  const { data: forms = [] } = useForms();
+  
   const [showAddLandlord, setShowAddLandlord] = useState(false);
   const [landlordForm, setLandlordForm] = useState({
     name: "", document: "", phone: "", email: "", password: "", city: "", cep: "", type: "pf" as "pf" | "pj",
   });
   const [landlordError, setLandlordError] = useState("");
 
-  useEffect(() => {
-    if (loggedIn) {
-      store.getLandlords().then(setLandlords);
-      store.getProducts().then(setProducts);
-      store.getForms().then(setForms);
-    }
-  }, [loggedIn]);
-
   const toggleFeature = async (id: string) => {
     const p = products.find(x => x.id === id);
     if (!p) return;
-    const updated = products.map(x => x.id === id ? { ...x, isFeatured: !x.isFeatured } : x);
-    setProducts(updated);
     await store.updateProduct(id, { isFeatured: !p.isFeatured });
+    queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   const deleteProduct = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-    const updated = products.filter(p => p.id !== id);
-    setProducts(updated);
     await store.deleteProduct(id);
+    queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   const editProduct = async (product: Product) => {
@@ -53,20 +49,16 @@ export default function AdminPage() {
     const newPrice = prompt("Novo preço:", product.price);
     if (newPrice === null) return;
 
-    const updated = products.map(p => p.id === product.id ? { ...p, name: newName || p.name, price: newPrice || p.price } : p);
-    setProducts(updated);
     await store.updateProduct(product.id, { name: newName || product.name, price: newPrice || product.price });
+    queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   const deleteLandlord = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este locador e todos os seus produtos anunciados?")) return;
     
-    const updatedLandlords = landlords.filter(l => l.id !== id);
-    setLandlords(updatedLandlords);
     await store.deleteLandlord(id);
-
-    const updatedProducts = products.filter(p => p.landlordId !== id);
-    setProducts(updatedProducts);
+    queryClient.invalidateQueries({ queryKey: ["landlords"] });
+    queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   const handleAddLandlord = async (e: React.FormEvent) => {
@@ -102,8 +94,7 @@ export default function AdminPage() {
     }
 
     if (userId) {
-      const updatedLandlords = await store.getLandlords();
-      setLandlords(updatedLandlords);
+      queryClient.invalidateQueries({ queryKey: ["landlords"] });
       setShowAddLandlord(false);
       setLandlordForm({
         name: "", document: "", phone: "", email: "", password: "", city: "", cep: "", type: "pf",
@@ -111,27 +102,31 @@ export default function AdminPage() {
     }
   };
 
-  const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Debounce do CEP para evitar múltiplas chamadas
+  const debouncedCep = useDebounce(landlordForm.cep, 800);
+
+  useEffect(() => {
+    const val = debouncedCep.replace(/\D/g, "");
+    if (val.length === 8) {
+      fetch(`https://viacep.com.br/ws/${val}/json/`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.erro) {
+            setLandlordForm(prev => ({
+              ...prev,
+              city: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
+            }));
+          }
+        })
+        .catch(err => console.error("Erro ao buscar CEP", err));
+    }
+  }, [debouncedCep]);
+
+  const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
     if (val.length > 8) val = val.substring(0, 8);
     const formatted = val.replace(/^(\d{5})(\d)/, "$1-$2");
-    
     setLandlordForm(prev => ({ ...prev, cep: formatted }));
-
-    if (val.length === 8) {
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${val}/json/`);
-        const data = await res.json();
-        if (!data.erro) {
-          setLandlordForm(prev => ({
-            ...prev,
-            city: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
-          }));
-        }
-      } catch (err) {
-        console.error("Erro ao buscar CEP", err);
-      }
-    }
   };
 
   const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {

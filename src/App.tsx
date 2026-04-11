@@ -11,7 +11,18 @@ import LandlordDashboard from "./pages/LandlordDashboard";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Configuração otimizada para reduzir requests
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutos - dados considerados "frescos"
+      gcTime: 10 * 60 * 1000, // 10 minutos - tempo no cache
+      refetchOnWindowFocus: false, // Não refaz request ao focar janela
+      refetchOnMount: false, // Não refaz request ao montar se tem cache
+      retry: 1, // Apenas 1 retry em caso de erro
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
