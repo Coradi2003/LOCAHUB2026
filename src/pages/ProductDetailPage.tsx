@@ -21,6 +21,9 @@ export default function ProductDetailPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+  // Debounce do CEP para evitar múltiplas chamadas - DEVE ficar antes dos early returns
+  const debouncedCep = useDebounce(form.cep, 800);
+
   useEffect(() => {
     async function load() {
       const prods = await store.getProducts();
@@ -35,6 +38,24 @@ export default function ProductDetailPage() {
     }
     load();
   }, [id]);
+
+  useEffect(() => {
+    const val = debouncedCep.replace(/\D/g, "");
+    if (val.length === 8) {
+      fetch(`https://viacep.com.br/ws/${val}/json/`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.erro) {
+            setForm(prev => ({
+              ...prev,
+              address: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
+            }));
+            setErrors(prev => ({ ...prev, address: "" }));
+          }
+        })
+        .catch(err => console.error("Erro ao buscar CEP", err));
+    }
+  }, [debouncedCep]);
 
   if (product === undefined) {
     return (
@@ -88,26 +109,7 @@ export default function ProductDetailPage() {
     setForm(prev => ({ ...prev, cep: formatted }));
   };
 
-  // Debounce do CEP para evitar múltiplas chamadas
-  const debouncedCep = useDebounce(form.cep, 800);
 
-  useEffect(() => {
-    const val = debouncedCep.replace(/\D/g, "");
-    if (val.length === 8) {
-      fetch(`https://viacep.com.br/ws/${val}/json/`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data.erro) {
-            setForm(prev => ({
-              ...prev,
-              address: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
-            }));
-            setErrors(prev => ({ ...prev, address: "" }));
-          }
-        })
-        .catch(err => console.error("Erro ao buscar CEP", err));
-    }
-  }, [debouncedCep]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
