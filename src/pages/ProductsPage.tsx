@@ -6,7 +6,7 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { CATEGORIES } from "@/lib/data";
-import { useProducts } from "@/hooks/use-data";
+import { useProducts, useLandlords } from "@/hooks/use-data";
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,8 +16,9 @@ export default function ProductsPage() {
   const [selectedCat, setSelectedCat] = useState(initialCat);
   const [query, setQuery] = useState(initialQ);
   
-  // Usa hook com cache - evita requests duplicados
+  // Usa hooks com cache compartilhado - evita requests duplicados
   const { data: products = [] } = useProducts();
+  const { data: landlords = [] } = useLandlords();
 
   const filtered = useMemo(() => {
     return products.filter(p => {
@@ -88,7 +89,10 @@ export default function ProductsPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filtered.map((p, i) => (
                 <ScrollReveal key={p.id} delay={i * 60}>
-                  <ProductCard product={p} />
+                  <ProductCard
+                    product={p}
+                    landlord={landlords.find(l => l.id === p.landlordId)}
+                  />
                 </ScrollReveal>
               ))}
             </div>

@@ -3,13 +3,22 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { lazy, Suspense } from "react";
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
-import ProductDetailPage from "./pages/ProductDetailPage";
-import LandlordLoginPage from "./pages/LandlordLoginPage";
-import LandlordDashboard from "./pages/LandlordDashboard";
-import AdminPage from "./pages/AdminPage";
-import NotFound from "./pages/NotFound";
+
+const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
+const LandlordLoginPage = lazy(() => import("./pages/LandlordLoginPage"));
+const LandlordDashboard = lazy(() => import("./pages/LandlordDashboard"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Fallback de carregamento simples e elegante
+const PageLoader = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 // Configuração otimizada para reduzir requests
 const queryClient = new QueryClient({
@@ -30,15 +39,17 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/produtos" element={<ProductsPage />} />
-          <Route path="/produto/:id" element={<ProductDetailPage />} />
-          <Route path="/login-locador" element={<LandlordLoginPage />} />
-          <Route path="/painel-locador" element={<LandlordDashboard />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/produtos" element={<ProductsPage />} />
+            <Route path="/produto/:id" element={<ProductDetailPage />} />
+            <Route path="/login-locador" element={<LandlordLoginPage />} />
+            <Route path="/painel-locador" element={<LandlordDashboard />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

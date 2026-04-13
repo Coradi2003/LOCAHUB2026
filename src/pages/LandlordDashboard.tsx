@@ -5,7 +5,7 @@ import Cropper from "react-easy-crop";
 import { store, CATEGORIES } from "@/lib/data";
 import type { Product, Landlord } from "@/lib/data";
 import { ProductCard } from "@/components/ProductCard";
-import { useProducts } from "@/hooks/use-data";
+import { useProducts, useLandlords } from "@/hooks/use-data";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function LandlordDashboard() {
@@ -21,8 +21,9 @@ export default function LandlordDashboard() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
-  // Usa hook com cache
+  // Usa hooks com cache compartilhado
   const { data: allProducts = [] } = useProducts();
+  const { data: allLandlords = [] } = useLandlords();
   const products = landlord ? allProducts.filter(p => p.landlordId === landlord.id) : [];
 
   useEffect(() => {
@@ -35,10 +36,9 @@ export default function LandlordDashboard() {
         return; 
       }
 
-      const lands = await store.getLandlords();
-      const mLand = lands.find(x => x.id === id);
+      const mLand = allLandlords.find(x => x.id === id);
       
-      if (!mLand) { 
+      if (!mLand && allLandlords.length > 0) { 
         alert("Ops! Seu cadastro ficou incompleto. O e-mail foi registrado, mas os dados da loja não foram salvos devido à falta das permissões anteriores do banco Público. Por favor, crie uma conta nova com outro e-mail, ou exclua essa conta lá no painel 'Authentication' do Supabase para tentar de novo.");
         store.setLandlordSession(null);
         await store.signOut();
@@ -46,10 +46,10 @@ export default function LandlordDashboard() {
         return; 
       }
       
-      setLandlord(mLand);
+      if (mLand) setLandlord(mLand);
     }
     load();
-  }, [navigate]);
+  }, [navigate, allLandlords]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -265,17 +265,20 @@ export default function LandlordDashboard() {
                    <p className="text-sm text-white/80 drop-shadow">Veja como seu produto aparecerá.</p>
                  </div>
                  <div className="w-full max-w-[320px] shadow-[0_0_40px_rgba(0,0,0,0.5)] rounded-xl ring-1 ring-border/20 pointer-events-none bg-background">
-                    <ProductCard product={{
-                      id: "preview",
-                      name: form.name || "Nome do Produto",
-                      description: form.description || "Descrição...",
-                      price: form.price || "R$ 0,00",
-                      category: form.category || CATEGORIES[0],
-                      city: form.city || landlord.city || "Sua Cidade",
-                      image: form.image || "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80",
-                      landlordId: landlord.id,
-                      createdAt: new Date().toISOString()
-                    }} />
+                    <ProductCard
+                      product={{
+                        id: "preview",
+                        name: form.name || "Nome do Produto",
+                        description: form.description || "Descrição...",
+                        price: form.price || "R$ 0,00",
+                        category: form.category || CATEGORIES[0],
+                        city: form.city || landlord.city || "Sua Cidade",
+                        image: form.image || "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80",
+                        landlordId: landlord.id,
+                        createdAt: new Date().toISOString()
+                      }}
+                      landlord={landlord}
+                    />
                  </div>
               </div>
             </div>

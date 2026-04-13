@@ -11,10 +11,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "@/hooks/use-debounce";
 
+import { useProducts, useLandlords } from "@/hooks/use-data";
+
 export default function ProductDetailPage() {
   const { id } = useParams();
-  const [product, setProduct] = useState<Product | null | undefined>(undefined);
-  const [landlord, setLandlord] = useState<Landlord | null | undefined>(undefined);
+  
+  const { data: products = [], isLoading: loadingProducts } = useProducts();
+  const { data: landlords = [], isLoading: loadingLandlords } = useLandlords();
+
+  const product = products.find(p => p.id === id);
+  const landlord = product ? landlords.find(l => l.id === product.landlordId) : null;
 
   const [formSent, setFormSent] = useState(false);
   const [form, setForm] = useState({ fullName: "", cpf: "", phone: "", cep: "", address: "", houseNumber: "" });
@@ -23,21 +29,6 @@ export default function ProductDetailPage() {
 
   // Debounce do CEP para evitar múltiplas chamadas - DEVE ficar antes dos early returns
   const debouncedCep = useDebounce(form.cep, 800);
-
-  useEffect(() => {
-    async function load() {
-      const prods = await store.getProducts();
-      const p = prods.find(x => x.id === id);
-      setProduct(p || null);
-      if (p) {
-        const lands = await store.getLandlords();
-        setLandlord(lands.find(l => l.id === p.landlordId) || null);
-      } else {
-        setLandlord(null);
-      }
-    }
-    load();
-  }, [id]);
 
   useEffect(() => {
     const val = debouncedCep.replace(/\D/g, "");
@@ -57,7 +48,7 @@ export default function ProductDetailPage() {
     }
   }, [debouncedCep]);
 
-  if (product === undefined) {
+  if (loadingProducts || loadingLandlords) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground animate-pulse">Carregando...</p>

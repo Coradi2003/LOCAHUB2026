@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PublicHeader } from "@/components/PublicHeader";
 import { Footer } from "@/components/Footer";
@@ -6,6 +6,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { store } from "@/lib/data";
 import type { Landlord } from "@/lib/data";
 import { isValidCPF } from "@/lib/utils";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function LandlordRegisterPage() {
   const navigate = useNavigate();
@@ -13,6 +14,26 @@ export default function LandlordRegisterPage() {
     name: "", document: "", phone: "", email: "", password: "", city: "", cep: "", type: "pf" as "pf" | "pj",
   });
   const [error, setError] = useState("");
+
+  // Debounce do CEP para evitar múltiplas chamadas e race conditions
+  const debouncedCep = useDebounce(form.cep, 800);
+
+  useEffect(() => {
+    const val = debouncedCep.replace(/\D/g, "");
+    if (val.length === 8) {
+      fetch(`https://viacep.com.br/ws/${val}/json/`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.erro) {
+            setForm(prev => ({
+              ...prev,
+              city: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
+            }));
+          }
+        })
+        .catch(err => console.error("Erro ao buscar CEP", err));
+    }
+  }, [debouncedCep]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,27 +73,11 @@ export default function LandlordRegisterPage() {
 
   const set = (k: string, v: string) => setForm({ ...form, [k]: v });
 
-  const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
     if (val.length > 8) val = val.substring(0, 8);
     const formatted = val.replace(/^(\d{5})(\d)/, "$1-$2");
-    
     setForm(prev => ({ ...prev, cep: formatted }));
-
-    if (val.length === 8) {
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${val}/json/`);
-        const data = await res.json();
-        if (!data.erro) {
-          setForm(prev => ({
-            ...prev,
-            city: `${data.logradouro}, Bairro ${data.bairro}, ${data.localidade} - ${data.uf}`
-          }));
-        }
-      } catch (err) {
-        console.error("Erro ao buscar CEP", err);
-      }
-    }
   };
 
   const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {

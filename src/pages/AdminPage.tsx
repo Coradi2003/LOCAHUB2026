@@ -182,11 +182,11 @@ export default function AdminPage() {
     );
   }
 
-  const TABS = [
+  const TABS = useMemo(() => [
     { key: "landlords" as const, label: "Locadores", icon: Users, count: landlords.length },
     { key: "products" as const, label: "Produtos", icon: Package, count: products.length },
     { key: "forms" as const, label: "Formulários", icon: FileText, count: forms.length },
-  ];
+  ], [landlords.length, products.length, forms.length]);
 
   return (
     <div className="min-h-screen bg-background">

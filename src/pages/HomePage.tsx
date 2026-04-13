@@ -7,7 +7,7 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { CATEGORIES, CATEGORY_ICONS } from "@/lib/data";
-import { useProducts } from "@/hooks/use-data";
+import { useProducts, useLandlords } from "@/hooks/use-data";
 
 const STEPS = [
   { icon: Search, title: "Encontre", desc: "Busque o produto ideal para seu evento nos filtros por categoria e região." },
@@ -19,8 +19,9 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   
-  // Usa hook com cache - evita requests duplicados
+  // Usa hooks com cache compartilhado - evita requests duplicados
   const { data: products = [] } = useProducts();
+  const { data: landlords = [] } = useLandlords();
 
   const featured = products.filter(p => p.isFeatured).slice(0, 4);
 
@@ -121,7 +122,10 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featured.map((p, i) => (
               <ScrollReveal key={p.id} delay={i * 80}>
-                <ProductCard product={p} />
+                <ProductCard
+                  product={p}
+                  landlord={landlords.find(l => l.id === p.landlordId)}
+                />
               </ScrollReveal>
             ))}
           </div>

@@ -1,16 +1,13 @@
 import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
-import { useState, useEffect } from "react";
-import { store, type Product, type Landlord } from "@/lib/data";
+import type { Product, Landlord } from "@/lib/data";
 
-export function ProductCard({ product }: { product: Product }) {
-  const [landlord, setLandlord] = useState<Landlord | null>(null);
+interface ProductCardProps {
+  product: Product;
+  landlord?: Landlord | null;
+}
 
-  useEffect(() => {
-    store.getLandlords().then(lands => {
-      setLandlord(lands.find(l => l.id === product.landlordId) || null);
-    });
-  }, [product.landlordId]);
+export function ProductCard({ product, landlord }: ProductCardProps) {
   return (
     <Link
       to={`/produto/${product.id}`}
