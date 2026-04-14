@@ -1,49 +1,65 @@
 import { next } from '@vercel/functions';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚠️  MODO DEBUG — NUNCA BLOQUEIA
-// Este arquivo apenas captura o User-Agent real e adiciona headers de
-// diagnóstico na resposta. Nenhum request é bloqueado.
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ─── BLOCKLIST ────────────────────────────────────────────────────────────────
 const BOT_BLOCKLIST = [
+  // Scrapers / HTTP libraries
   'scrapy', 'crawler', 'spider', 'scraper',
   'wget', 'python-requests', 'python-urllib', 'python-httpx', 'aiohttp',
   'go-http-client', 'okhttp', 'node-fetch', 'got/',
   'phin', 'superagent', 'needle', 'axios/',
+  // Ferramentas de ataque / reconhecimento
   'zgrab', 'masscan', 'nikto', 'sqlmap', 'nuclei',
   'dirbuster', 'gobuster', 'ffuf', 'wfuzz', 'burpsuite',
   'nessus', 'openvas', 'acunetix', 'appscan',
+  // Bots de SEO agressivos
   'semrushbot', 'ahrefsbot', 'mj12bot', 'dotbot', 'petalbot',
   'yandexbot', 'baiduspider', 'rogerbot', 'blexbot', 'exabot',
   'dataprovider', 'linkdexbot', 'spbot', 'seokicks',
+  // Headless / automação
   'headlesschrome', 'phantomjs', 'selenium', 'webdriver', 'puppeteer',
   'playwright', 'cypress', 'testcafe', 'nightmare',
 ];
 
+// ─── ALLOWLIST ────────────────────────────────────────────────────────────────
+// Prioridade absoluta — nunca bloqueados.
 const ALLOWED_BOTS = [
+  // Motores de busca
   'googlebot', 'google-inspectiontool', 'google-read-aloud',
   'bingbot', 'duckduckbot', 'slurp',
+  // Preview social
   'whatsapp', 'facebookexternalhit', 'facebot',
   'twitterbot', 'slackbot', 'discordbot', 'telegrambot', 'linkedinbot',
 ];
 
 export default function middleware(request: Request) {
-  const ua = request.headers.get('user-agent') ?? '';
-  const uaLower = ua.toLowerCase();
+  try {
+    const ua = (request.headers.get('user-agent') ?? '').toLowerCase();
 
-  const allowedMatch = ALLOWED_BOTS.find(b => uaLower.includes(b)) ?? 'none';
-  const blockedMatch = BOT_BLOCKLIST.find(b => uaLower.includes(b)) ?? 'none';
+    // Regra 1: allowlist tem prioridade absoluta
+    if (ALLOWED_BOTS.some(b => ua.includes(b))) {
+      return next();
+    }
 
-  // ✅ SEMPRE passa — adiciona só os headers de diagnóstico
-  return next({
-    headers: {
-      'x-debug-ua': ua.slice(0, 250),
-      'x-debug-ua-empty': ua.trim() === '' ? 'true' : 'false',
-      'x-debug-allowed-match': allowedMatch,
-      'x-debug-blocked-match': blockedMatch,
-    },
-  });
+    // Regra 2: UA vazio → PASSA (health checks, CDN prefetch)
+    if (!ua.trim()) {
+      return next();
+    }
+
+    // Regra 3: UA presente e na blocklist → bloqueia
+    if (BOT_BLOCKLIST.some(b => ua.includes(b))) {
+      return new Response('Acesso negado.', {
+        status: 403,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
+    }
+
+    // Regra 4: qualquer outro UA → passa
+    return next();
+
+  } catch {
+    // Fail-safe: qualquer erro no middleware deixa o request passar
+    return next();
+  }
 }
 
 export const config = {
