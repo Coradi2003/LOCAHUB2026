@@ -91,23 +91,25 @@ export const store = {
   },
 
   deleteProduct: async (id: string) => {
-    // 1. Delete associated forms first to avoid foreign key constraints
-    const { error: formsError } = await supabase
-      .from('client_forms')
+    // 1. Delete associated forms first
+    await supabase.from('client_forms').delete().eq('product_id', id);
+
+    // 2. Delete the product and return the result
+    const { error, data, status } = await supabase
+      .from('products')
       .delete()
-      .eq('product_id', id);
+      .eq('id', id)
+      .select();
 
-    if (formsError) {
-      console.error("Error deleting product forms:", formsError);
-      return { error: "Erro ao excluir formulários do produto: " + formsError.message };
-    }
-
-    // 2. Delete the product
-    const { error } = await supabase.from('products').delete().eq('id', id);
     if (error) {
       console.error("Error deleting product:", error);
       return { error: error.message };
     }
+
+    if (!data || data.length === 0) {
+      return { error: "Nenhum produto foi excluído. Verifique suas permissões." };
+    }
+
     return { success: true };
   },
 
@@ -177,23 +179,25 @@ export const store = {
   },
 
   deleteLandlord: async (id: string) => {
-    // 1. Delete associated products first to avoid foreign key constraints
-    const { error: productsError } = await supabase
-      .from('products')
-      .delete()
-      .eq('landlord_id', id);
-    
-    if (productsError) {
-      console.error("Error deleting landlord's products:", productsError);
-      return { error: "Erro ao excluir produtos do locador: " + productsError.message };
-    }
+    // 1. Delete associated products first
+    await supabase.from('products').delete().eq('landlord_id', id);
 
     // 2. Delete the landlord
-    const { error } = await supabase.from('landlords').delete().eq('id', id);
+    const { error, data } = await supabase
+      .from('landlords')
+      .delete()
+      .eq('id', id)
+      .select();
+
     if (error) {
       console.error("Error deleting landlord:", error);
       return { error: "Erro ao excluir locador: " + error.message };
     }
+
+    if (!data || data.length === 0) {
+      return { error: "Nenhum locador foi excluído. Verifique suas permissões." };
+    }
+
     return { success: true };
   },
 
