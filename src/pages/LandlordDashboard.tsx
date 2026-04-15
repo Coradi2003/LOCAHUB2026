@@ -3,9 +3,10 @@ import { useNavigate, Link } from "react-router-dom";
 import { Plus, Pencil, Trash2, LogOut, Package, Crop } from "lucide-react";
 import Cropper from "react-easy-crop";
 import { store, CATEGORIES } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
 import type { Product, Landlord } from "@/lib/data";
 import { ProductCard } from "@/components/ProductCard";
-import { useProducts, useLandlords } from "@/hooks/use-data";
+import { useProducts } from "@/hooks/use-data";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function LandlordDashboard() {
@@ -22,14 +23,14 @@ export default function LandlordDashboard() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
-  // Usa hooks com cache compartilhado
+  // Busca produtos com cache compartilhado
   const { data: allProducts = [] } = useProducts();
-  const { data: allLandlords = [] } = useLandlords();
   const products = landlord ? allProducts.filter(p => p.landlordId === landlord.id) : [];
 
   useEffect(() => {
     async function load() {
-      let id = await store.getCurrentSessionId();
+      // 1. Verificar sessão ativa no Supabase
+      const id = await store.getCurrentSessionId();
       
       if (!id) { 
         store.setLandlordSession(null);
@@ -37,24 +38,32 @@ export default function LandlordDashboard() {
         return; 
       }
 
-      // Aguarda allLandlords carregar antes de validar
-      if (allLandlords.length === 0) return;
+      // 2. Buscar locador diretamente pelo ID (sem depender do hook de lista)
+      const { data, error } = await supabase
+        .from('landlords')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-      const mLand = allLandlords.find(x => x.id === id);
-      
-      if (!mLand) { 
-        alert("Ops! Seu cadastro ficou incompleto. O e-mail foi registrado, mas os dados da loja não foram salvos devido à falta das permissões anteriores do banco Público. Por favor, crie uma conta nova com outro e-mail, ou exclua essa conta lá no painel 'Authentication' do Supabase para tentar de novo.");
+      if (error || !data) {
+        alert("Ops! Seu cadastro ficou incompleto. O e-mail foi registrado, mas os dados da loja não foram salvos. Por favor, crie uma conta nova com outro e-mail.");
         store.setLandlordSession(null);
         await store.signOut();
         navigate("/login-locador"); 
         return; 
       }
       
+      // 3. Mapear campos snake_case → camelCase
+      const mLand: Landlord = {
+        ...data,
+        createdAt: data.created_at,
+      };
+
       setLandlord(mLand);
       setLoading(false);
     }
     load();
-  }, [navigate, allLandlords]);
+  }, [navigate]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
