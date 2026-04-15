@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Package, FileText, LogOut, Star, Edit, Trash2, Plus } from "lucide-react";
 import { store } from "@/lib/data";
@@ -102,6 +102,13 @@ export default function AdminPage() {
     }
   };
 
+  // Tabs do painel admin (precisa estar antes de qualquer return condicional)
+  const TABS = useMemo(() => [
+    { key: "landlords" as const, label: "Locadores", icon: Users, count: landlords.length },
+    { key: "products" as const, label: "Produtos", icon: Package, count: products.length },
+    { key: "forms" as const, label: "Formulários", icon: FileText, count: forms.length },
+  ], [landlords.length, products.length, forms.length]);
+
   // Debounce do CEP para evitar múltiplas chamadas
   const debouncedCep = useDebounce(landlordForm.cep, 800);
 
@@ -182,11 +189,6 @@ export default function AdminPage() {
     );
   }
 
-  const TABS = useMemo(() => [
-    { key: "landlords" as const, label: "Locadores", icon: Users, count: landlords.length },
-    { key: "products" as const, label: "Produtos", icon: Package, count: products.length },
-    { key: "forms" as const, label: "Formulários", icon: FileText, count: forms.length },
-  ], [landlords.length, products.length, forms.length]);
 
   return (
     <div className="min-h-screen bg-background">
