@@ -161,8 +161,13 @@ export default function LandlordDashboard() {
   };
 
   const handleDelete = async (id: string) => {
-    await store.deleteProduct(id);
-    queryClient.invalidateQueries({ queryKey: ["products"] });
+    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+    const result = await store.deleteProduct(id);
+    if (result?.error) {
+      alert("Erro ao excluir produto: " + result.error);
+    } else {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    }
   };
 
   const handleLogout = async () => {

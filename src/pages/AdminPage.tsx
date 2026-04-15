@@ -39,8 +39,12 @@ export default function AdminPage() {
 
   const deleteProduct = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-    await store.deleteProduct(id);
-    queryClient.invalidateQueries({ queryKey: ["products"] });
+    const result = await store.deleteProduct(id);
+    if (result?.error) {
+      alert("Erro ao excluir produto: " + result.error);
+    } else {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    }
   };
 
   const editProduct = async (product: Product) => {
@@ -56,9 +60,13 @@ export default function AdminPage() {
   const deleteLandlord = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este locador e todos os seus produtos anunciados?")) return;
     
-    await store.deleteLandlord(id);
-    queryClient.invalidateQueries({ queryKey: ["landlords"] });
-    queryClient.invalidateQueries({ queryKey: ["products"] });
+    const result = await store.deleteLandlord(id);
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      queryClient.invalidateQueries({ queryKey: ["landlords"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    }
   };
 
   const handleAddLandlord = async (e: React.FormEvent) => {
