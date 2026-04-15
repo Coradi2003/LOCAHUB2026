@@ -24,7 +24,7 @@ export default function LandlordDashboard() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
   // Busca produtos com cache compartilhado
-  const { data: allProducts = [] } = useProducts();
+  const { data: allProducts = [], refetch: refetchProducts } = useProducts();
   const products = landlord ? allProducts.filter(p => p.landlordId === landlord.id) : [];
 
   useEffect(() => {
@@ -166,7 +166,7 @@ export default function LandlordDashboard() {
     if (result?.error) {
       alert("Erro ao excluir produto: " + result.error);
     } else {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      await refetchProducts();
     }
   };
 

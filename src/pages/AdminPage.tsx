@@ -43,7 +43,7 @@ export default function AdminPage() {
     if (result?.error) {
       alert("Erro ao excluir produto: " + result.error);
     } else {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      await refetchProducts();
     }
   };
 
@@ -64,8 +64,7 @@ export default function AdminPage() {
     if (result?.error) {
       alert(result.error);
     } else {
-      queryClient.invalidateQueries({ queryKey: ["landlords"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      await Promise.all([refetchLandlords(), refetchProducts()]);
     }
   };
 
