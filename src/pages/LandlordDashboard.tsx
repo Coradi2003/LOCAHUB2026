@@ -12,6 +12,7 @@ export default function LandlordDashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [landlord, setLandlord] = useState<Landlord | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState({ name: "", category: CATEGORIES[0], description: "", city: "", price: "", image: "" });
@@ -36,9 +37,12 @@ export default function LandlordDashboard() {
         return; 
       }
 
+      // Aguarda allLandlords carregar antes de validar
+      if (allLandlords.length === 0) return;
+
       const mLand = allLandlords.find(x => x.id === id);
       
-      if (!mLand && allLandlords.length > 0) { 
+      if (!mLand) { 
         alert("Ops! Seu cadastro ficou incompleto. O e-mail foi registrado, mas os dados da loja não foram salvos devido à falta das permissões anteriores do banco Público. Por favor, crie uma conta nova com outro e-mail, ou exclua essa conta lá no painel 'Authentication' do Supabase para tentar de novo.");
         store.setLandlordSession(null);
         await store.signOut();
@@ -46,7 +50,8 @@ export default function LandlordDashboard() {
         return; 
       }
       
-      if (mLand) setLandlord(mLand);
+      setLandlord(mLand);
+      setLoading(false);
     }
     load();
   }, [navigate, allLandlords]);
@@ -156,7 +161,11 @@ export default function LandlordDashboard() {
     navigate("/login-locador");
   };
 
-  if (!landlord) return null;
+  if (loading || !landlord) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
