@@ -37,23 +37,17 @@ export interface ClientForm {
 }
 
 export const CATEGORIES = [
-  "Cama Elástica",
+  "Brinquedos",
   "Mesa de Jogos",
-  "Piscina de Bolinha",
   "Audiovisual",
-  "Infláveis",
-  "Brinquedos para Festas",
   "Equipamentos para Eventos",
   "Estruturas para Eventos",
 ];
 
 export const CATEGORY_ICONS: Record<string, string> = {
-  "Cama Elástica": "🤸",
+  "Brinquedos": "🎉",
   "Mesa de Jogos": "🎱",
-  "Piscina de Bolinha": "🔴",
   "Audiovisual": "🎵",
-  "Infláveis": "🎈",
-  "Brinquedos para Festas": "🎉",
   "Equipamentos para Eventos": "🎪",
   "Estruturas para Eventos": "⛺",
 };
