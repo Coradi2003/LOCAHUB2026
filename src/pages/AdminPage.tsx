@@ -22,7 +22,7 @@ export default function AdminPage() {
   // Usa hooks com cache
   const { data: landlords = [], refetch: refetchLandlords } = useLandlords();
   const { data: products = [], refetch: refetchProducts } = useProducts();
-  const { data: forms = [] } = useForms();
+  const { data: forms = [], refetch: refetchForms } = useForms();
   
   const [showAddLandlord, setShowAddLandlord] = useState(false);
   const [landlordForm, setLandlordForm] = useState({
@@ -39,10 +39,16 @@ export default function AdminPage() {
 
   const deleteProduct = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+    
+    // Atualização Otimista: Remove o produto da UI instantaneamente
+    queryClient.setQueryData(["products"], (old: Product[] | undefined) => 
+      old ? old.filter(p => p.id !== id) : []
+    );
+
     const result = await store.deleteProduct(id);
     if (result?.error) {
       alert("Erro ao excluir produto: " + result.error);
-    } else {
+      // Rollback: Recarrega do banco se der erro
       await refetchProducts();
     }
   };
@@ -60,11 +66,35 @@ export default function AdminPage() {
   const deleteLandlord = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este locador e todos os seus produtos anunciados?")) return;
     
+    // Atualização Otimista: Remove o locador da UI instantaneamente
+    queryClient.setQueryData(["landlords"], (old: Landlord[] | undefined) => 
+      old ? old.filter(l => l.id !== id) : []
+    );
+    // Também remove os produtos desse locador otimisticamente
+    queryClient.setQueryData(["products"], (old: Product[] | undefined) => 
+      old ? old.filter(p => p.landlordId !== id) : []
+    );
+
     const result = await store.deleteLandlord(id);
     if (result?.error) {
       alert(result.error);
-    } else {
+      // Rollback: Recarrega do banco se der erro
       await Promise.all([refetchLandlords(), refetchProducts()]);
+    }
+  };
+  
+  const deleteForm = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este formulário?")) return;
+    
+    // Atualização Otimista
+    queryClient.setQueryData(["forms"], (old: ClientForm[] | undefined) => 
+      old ? old.filter(f => f.id !== id) : []
+    );
+
+    const result = await store.deleteForm(id);
+    if (result?.error) {
+      alert(result.error);
+      await refetchForms();
     }
   };
 
@@ -390,6 +420,7 @@ export default function AdminPage() {
                     <th className="p-3 font-medium">Endereço</th>
                     <th className="p-3 font-medium">Produto</th>
                     <th className="p-3 font-medium">Data</th>
+                    <th className="p-3 font-medium text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -400,6 +431,11 @@ export default function AdminPage() {
                       <td className="p-3 text-muted-foreground">{f.address}</td>
                       <td className="p-3 text-muted-foreground">{f.productName}</td>
                       <td className="p-3 text-muted-foreground">{new Date(f.createdAt).toLocaleDateString("pt-BR")}</td>
+                      <td className="p-3 flex items-center justify-end">
+                        <button onClick={() => deleteForm(f.id)} title="Excluir" className="p-1.5 text-destructive hover:bg-destructive/10 rounded-md transition-colors">
+                           <Trash2 size={16} strokeWidth={2.5} />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

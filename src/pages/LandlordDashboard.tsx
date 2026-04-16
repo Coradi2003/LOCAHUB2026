@@ -162,10 +162,16 @@ export default function LandlordDashboard() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+
+    // Atualização Otimista: Remove o produto da UI instantaneamente
+    queryClient.setQueryData(["products"], (old: Product[] | undefined) => 
+      old ? old.filter(p => p.id !== id) : []
+    );
+
     const result = await store.deleteProduct(id);
     if (result?.error) {
       alert("Erro ao excluir produto: " + result.error);
-    } else {
+      // Rollback: Recarrega do banco se der erro
       await refetchProducts();
     }
   };

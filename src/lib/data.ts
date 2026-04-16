@@ -226,6 +226,25 @@ export const store = {
     if (error) console.error("Error adding form:", error);
   },
 
+  deleteForm: async (id: string) => {
+    const { error, data } = await supabase
+      .from('client_forms')
+      .delete()
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error("Error deleting form:", error);
+      return { error: error.message };
+    }
+
+    if (!data || data.length === 0) {
+      return { error: "Nenhum formulário foi excluído. Verifique suas permissões." };
+    }
+
+    return { success: true };
+  },
+
   // Auth helpers (still using localStorage for local session tracking, but can be synced properly later)
   getCurrentLandlordId: (): string | null => {
     return localStorage.getItem("lokahub_landlord_session");
