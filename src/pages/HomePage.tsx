@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+// Force-redeploy to trigger Vercel build after Hero redesign
 import { Search, ArrowRight, Sparkles, Shield, Zap } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
