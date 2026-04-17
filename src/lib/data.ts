@@ -42,6 +42,7 @@ export const CATEGORIES = [
   "Audiovisual",
   "Equipamentos para Eventos",
   "Estruturas para Eventos",
+  "Equipamentos Para Obras",
 ];
 
 export const CATEGORY_ICONS: Record<string, string> = {
@@ -50,6 +51,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
   "Audiovisual": "🎵",
   "Equipamentos para Eventos": "🎪",
   "Estruturas para Eventos": "⛺",
+  "Equipamentos Para Obras": "🏗️",
 };
 
 export const store = {
