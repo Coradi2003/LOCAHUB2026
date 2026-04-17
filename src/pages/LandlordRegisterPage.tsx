@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { store } from "@/lib/data";
 import type { Landlord } from "@/lib/data";
-import { isValidCPF } from "@/lib/utils";
+import { isValidCPF, isValidPhone } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export default function LandlordRegisterPage() {
@@ -42,8 +42,7 @@ export default function LandlordRegisterPage() {
       return;
     }
 
-    const cleanPhone = form.phone.replace(/\D/g, "");
-    if (cleanPhone.length < 10) {
+    if (!isValidPhone(form.phone)) {
       setError("Por favor, insira um número de WhatsApp válido com DDD.");
       return;
     }
@@ -78,6 +77,22 @@ export default function LandlordRegisterPage() {
     if (val.length > 8) val = val.substring(0, 8);
     const formatted = val.replace(/^(\d{5})(\d)/, "$1-$2");
     setForm(prev => ({ ...prev, cep: formatted }));
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 11) val = val.substring(0, 11);
+    
+    if (val.length > 2) {
+      const ddd = val.substring(0, 2);
+      const number = val.substring(2);
+      if (val.length > 10) {
+        val = `(${ddd}) ${number.substring(0, 5)}-${number.substring(5)}`;
+      } else {
+        val = `(${ddd}) ${number.substring(0, 4)}-${number.substring(4)}`;
+      }
+    }
+    set("phone", val);
   };
 
   const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +134,7 @@ export default function LandlordRegisterPage() {
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
               <input placeholder="CPF" value={form.document} onChange={handleDocumentChange}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-              <input placeholder="WhatsApp (com DDD, ex: 11999999999)" value={form.phone} onChange={e => set("phone", e.target.value)}
+              <input placeholder="WhatsApp (com DDD)" value={form.phone} onChange={handlePhoneChange}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
               <input placeholder="E-mail" type="email" value={form.email} onChange={e => set("email", e.target.value)}
                 className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />

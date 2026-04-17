@@ -6,7 +6,7 @@ import { Footer } from "@/components/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { store } from "@/lib/data";
 import type { ClientForm, Product, Landlord } from "@/lib/data";
-import { isValidCPF } from "@/lib/utils";
+import { isValidCPF, isValidPhone } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -72,8 +72,7 @@ export default function ProductDetailPage() {
     if (!form.fullName.trim()) e.fullName = "Nome obrigatório";
     if (!form.cpf.trim() || !isValidCPF(form.cpf)) e.cpf = "CPF inválido";
     
-    const cleanPhone = form.phone.replace(/\D/g, "");
-    if (!form.phone.trim() || cleanPhone.length < 10) e.phone = "Telefone obrigatório (com DDD)";
+    if (!form.phone.trim() || !isValidPhone(form.phone)) e.phone = "Telefone celular inválido (mínimo 10 dígitos com DDD)";
     
     if (!form.cep.trim() || form.cep.replace(/\D/g, "").length < 8) e.cep = "CEP obrigatório";
     if (!form.address.trim()) e.address = "Endereço obrigatório";
@@ -107,10 +106,15 @@ export default function ProductDetailPage() {
     if (val.length > 11) val = val.substring(0, 11);
     
     if (val.length > 2) {
-      val = `(${val.substring(0, 2)}) ${val.substring(2)}`;
-    }
-    if (val.length > 9) {
-      val = `${val.substring(0, 10)}-${val.substring(10)}`;
+      const ddd = val.substring(0, 2);
+      const number = val.substring(2);
+      if (val.length > 10) {
+        // Celular: (XX) 9XXXX-XXXX
+        val = `(${ddd}) ${number.substring(0, 5)}-${number.substring(5)}`;
+      } else if (val.length > 2) {
+        // Fixo: (XX) XXXX-XXXX
+        val = `(${ddd}) ${number.substring(0, 4)}-${number.substring(4)}`;
+      }
     }
     setForm(prev => ({ ...prev, phone: val }));
   };
