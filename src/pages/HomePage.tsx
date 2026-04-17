@@ -34,73 +34,93 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <PublicHeader />
 
-      {/* Hero */}
-      <section className="relative min-h-[46vh] py-10 flex items-center justify-center overflow-hidden bg-yellow-500 dark">
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-orange-400 to-orange-500" />
+      {/* Hero Redesign */}
+      <section className="relative min-h-[650px] lg:min-h-[85vh] flex items-center justify-center overflow-hidden">
+        {/* Background Layer */}
+        <div className="absolute inset-0">
+          <img 
+            src="/hero-bg.png" 
+            alt="Event background" 
+            className="w-full h-full object-cover opacity-40 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background" />
+        </div>
         
-        <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] min-w-[500px] bg-yellow-300/40 rounded-full blur-[120px] mix-blend-screen" />
-        <div className="absolute -bottom-[20%] -right-[10%] w-[55vw] h-[55vw] min-w-[600px] bg-orange-500/30 rounded-full blur-[140px] mix-blend-screen" />
-        <div className="absolute top-[20%] right-[15%] w-[35vw] h-[35vw] min-w-[400px] bg-orange-400/25 rounded-full blur-[100px] mix-blend-screen" />
-        <div className="absolute bottom-[10%] left-[20%] w-[40vw] h-[40vw] min-w-[400px] bg-yellow-500/30 rounded-full blur-[110px] mix-blend-screen" />
-        
-        <div className="absolute inset-0 bg-background/5 backdrop-blur-3xl mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
+        {/* Decorative Blobs */}
+        <div className="absolute top-1/4 -left-20 w-[40vw] h-[40vw] bg-primary/20 rounded-full blur-[120px] animate-glow-pulse" />
+        <div className="absolute bottom-1/4 -right-20 w-[35vw] h-[35vw] bg-accent/20 rounded-full blur-[100px] animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
 
-        <div className="relative container text-center space-y-8 pt-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium animate-fade-up">
-            <Sparkles size={14} />
-            Plataforma #1 de locação para eventos
+        <div className="relative container max-w-6xl text-center space-y-10 pt-12 md:pt-0">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-primary-foreground/90 text-xs md:text-sm font-medium animate-fade-up">
+            <Sparkles size={14} className="text-primary" />
+            <span className="tracking-wider">PLATAFORMA #1 DE LOCAÇÃO PARA EVENTOS</span>
           </div>
 
-          <h1
-            className="text-4xl sm:text-5xl md:text-7xl font-display font-bold leading-[0.95] tracking-tight opacity-0 animate-fade-up"
-            style={{ animationDelay: "100ms" }}
-          >
-            Tudo para{" "}
-            <span className="text-gradient">locação</span>
-            <br />em um só lugar
-          </h1>
+          <div className="space-y-6">
+            <h1
+              className="text-5xl sm:text-6xl md:text-8xl font-display font-bold leading-[0.9] tracking-tighter opacity-0 animate-fade-up"
+              style={{ animationDelay: "100ms" }}
+            >
+              Tudo para <br />
+              <span className="text-gradient drop-shadow-[0_0_30px_hsl(var(--primary)/0.3)]">locação</span>{' '}
+              em um só lugar
+            </h1>
 
-          <p
-            className="text-lg md:text-xl text-white max-w-2xl mx-auto opacity-0 animate-fade-up"
-            style={{ animationDelay: "200ms" }}
-          >
-            Encontre camas elásticas, mesas de jogos, infláveis e muito mais.
-            Conecte-se a locadores de confiança na sua região.
-          </p>
+            <p
+              className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-up leading-relaxed"
+              style={{ animationDelay: "200ms" }}
+            >
+              Encontre camas elásticas, infláveis, mesas de jogos e muito mais. 
+              Conecte-se aos melhores locadores da sua região.
+            </p>
+          </div>
 
+          {/* Glass Search Bar */}
           <form
             onSubmit={handleSearch}
-            className="max-w-xl mx-auto flex gap-2 opacity-0 animate-fade-up"
+            className="max-w-2xl mx-auto p-2 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex flex-col sm:flex-row gap-2 opacity-0 animate-fade-up"
             style={{ animationDelay: "300ms" }}
           >
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
               <input
                 type="text"
-                placeholder="Buscar por produto, categoria..."
+                placeholder="O que você precisa para seu evento?"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full h-12 pl-11 pr-4 rounded-xl bg-muted/60 border border-border/60 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
+                className="w-full h-14 pl-12 pr-4 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none text-lg"
               />
             </div>
             <button
               type="submit"
-              className="h-12 px-6 rounded-xl bg-gradient-party text-primary-foreground font-semibold hover:opacity-90 transition-opacity active:scale-[0.97]"
+              className="h-14 px-10 rounded-xl bg-gradient-party text-white font-bold text-lg hover:shadow-[0_0_25px_hsl(var(--primary)/0.4)] transition-all active:scale-[0.98] group shrink-0"
             >
-              Buscar
+              <span className="flex items-center justify-center gap-2">
+                Buscar <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </span>
             </button>
           </form>
 
+          {/* Trust Indicators */}
           <div
-            className="opacity-0 animate-fade-up"
+            className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 opacity-0 animate-fade-up pt-4"
             style={{ animationDelay: "400ms" }}
           >
+            <div className="flex items-center gap-2 text-sm text-muted-foreground/80">
+              <Shield size={16} className="text-primary" />
+              Segurança Garantida
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground/80">
+              <Zap size={16} className="text-primary" />
+              Aluguel Rápido
+            </div>
             <Link
               to="/produtos"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
-              Ver todos os produtos <ArrowRight size={14} />
+              Ver todos os detalhes <ArrowRight size={14} />
             </Link>
           </div>
         </div>
