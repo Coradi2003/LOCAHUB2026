@@ -54,9 +54,9 @@ export default function HomePage() {
 
         <div className="relative container max-w-6xl text-center space-y-10 pt-12 md:pt-0">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-primary-foreground/90 text-xs md:text-sm font-medium animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-md text-black text-xs md:text-sm font-medium animate-fade-up">
             <Sparkles size={14} className="text-primary" />
-            <span className="tracking-wider">PLATAFORMA #1 DE LOCAÇÃO PARA EVENTOS</span>
+            <span className="tracking-wider">PLATAFORMA #1 DE LOCAÇÃO</span>
           </div>
 
           <div className="space-y-6">
