@@ -39,17 +39,17 @@ export interface ClientForm {
 export const CATEGORIES = [
   "Brinquedos",
   "Mesa de Jogos",
-  "Audiovisual",
+  "Audio",
   "Eventos",
-  "Equipamentos Para Obras",
+  "Obras",
 ];
 
 export const CATEGORY_ICONS: Record<string, string> = {
   "Brinquedos": "🎉",
   "Mesa de Jogos": "🎱",
-  "Audiovisual": "🎵",
+  "Audio": "🎵",
   "Eventos": "🎪",
-  "Equipamentos Para Obras": "🏗️",
+  "Obras": "🏗️",
 };
 
 export const store = {
@@ -58,7 +58,9 @@ export const store = {
     if (error) { console.error("Error fetching products:", error); return []; }
     return data.map(d => ({
       ...d,
-      category: (d.category === "Equipamentos para Eventos" || d.category === "Estruturas para Eventos") ? "Eventos" : d.category,
+      category: (d.category === "Equipamentos para Eventos" || d.category === "Estruturas para Eventos") ? "Eventos" : 
+                (d.category === "Audiovisual") ? "Audio" : 
+                (d.category === "Equipamentos Para Obras") ? "Obras" : d.category,
       landlordId: d.landlord_id,
       isFeatured: d.is_featured,
       createdAt: d.created_at
