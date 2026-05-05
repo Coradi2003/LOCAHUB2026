@@ -52,11 +52,11 @@ export default function HomePage() {
         <div className="absolute top-1/4 -left-20 w-[40vw] h-[40vw] bg-primary/20 rounded-full blur-[120px] animate-glow-pulse" />
         <div className="absolute bottom-1/4 -right-20 w-[35vw] h-[35vw] bg-accent/20 rounded-full blur-[100px] animate-glow-pulse" style={{ animationDelay: '1.5s' }} />
 
-        <div className="relative container max-w-6xl text-center space-y-10 pt-12 md:pt-0">
+        <div className="relative container max-w-6xl text-center space-y-10 pt-32 md:pt-20">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-black/10 bg-black/5 backdrop-blur-md text-black text-xs md:text-sm font-medium animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs md:text-sm font-medium animate-fade-up">
             <Sparkles size={14} className="text-primary" />
-            <span className="tracking-wider">PLATAFORMA #1 DE LOCAÇÃO</span>
+            <span className="tracking-wider font-bold">PLATAFORMA #1 DE LOCAÇÃO</span>
           </div>
 
           <div className="space-y-6">

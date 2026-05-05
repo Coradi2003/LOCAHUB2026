@@ -5,6 +5,8 @@ import { Footer } from "@/components/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { store } from "@/lib/data";
 
+import { MessageCircle } from "lucide-react";
+
 export default function LandlordLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -47,6 +49,15 @@ export default function LandlordLoginPage() {
               <p className="text-xs text-muted-foreground text-center">
                 Não tem acesso? Entre em contato com o administrador.
               </p>
+              <a 
+                href="https://wa.me/5541999995443?text=Quero%20ser%20um%20locador%20da%20LokaHub!" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-[#25D366] text-white font-semibold hover:opacity-90 transition-opacity active:scale-[0.97]"
+              >
+                <MessageCircle size={18} />
+                Quero ser um Locador
+              </a>
             </form>
           </ScrollReveal>
         </div>
