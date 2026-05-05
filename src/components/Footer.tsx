@@ -6,6 +6,7 @@ export function Footer() {
       <div className="container">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
+            <img src="/logo.png" alt="LokaHub Logo" className="h-10 w-auto mb-4" />
             <span className="text-xl font-bold font-display text-gradient">LokaHub</span>
             <p className="text-sm text-muted-foreground mt-1">Conectando você à diversão perfeita.</p>
           </div>
