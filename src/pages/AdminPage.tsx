@@ -212,7 +212,10 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 rounded-xl border border-border/60 bg-card p-6">
-          <h1 className="text-xl font-display font-bold text-center">Admin <span className="text-gradient">LokaHub</span></h1>
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <img src="/logo.png" alt="LokaHub Logo" className="h-12 w-auto" />
+            <h1 className="text-xl font-display font-bold text-center">Painel Admin</h1>
+          </div>
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
           <input placeholder="E-mail do Administrador" type="email" value={email} onChange={e => setEmail(e.target.value)}
             className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
@@ -231,7 +234,10 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="container flex items-center justify-between h-14">
-          <span className="font-display font-bold text-gradient text-lg">LokaHub Admin</span>
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="LokaHub Logo" className="h-8 w-auto" />
+            <span className="font-display font-bold text-gradient text-lg">Admin</span>
+          </div>
           <button onClick={handleLogout} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
             <LogOut size={14} /> Sair
           </button>
