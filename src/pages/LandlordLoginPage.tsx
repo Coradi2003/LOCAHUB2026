@@ -26,39 +26,78 @@ export default function LandlordLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <PublicHeader />
-      <main className="pt-24 pb-16">
-        <div className="container max-w-md">
+      <main className="flex-1 flex items-center justify-center p-4 pt-32 pb-20">
+        <div className="w-full max-w-md">
           <ScrollReveal>
-            <h1 className="text-3xl font-display font-bold text-center mb-2">
-              Login do <span className="text-gradient">Locador</span>
-            </h1>
-            <p className="text-sm text-muted-foreground text-center mb-8">Acesse seu painel.</p>
+            <div className="text-center mb-10">
+              <h1 className="text-3xl font-display font-bold mb-3">
+                Painel do <span className="text-gradient">Locador</span>
+              </h1>
+              <p className="text-muted-foreground">Gerencie suas locações de forma simples e rápida.</p>
+            </div>
           </ScrollReveal>
+          
           <ScrollReveal delay={100}>
-            <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-border/60 bg-card p-6">
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <input placeholder="E-mail" type="email" value={email} onChange={e => setEmail(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-              <input placeholder="Senha" type="password" value={password} onChange={e => setPassword(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-              <button type="submit" className="w-full h-11 rounded-xl bg-gradient-party text-primary-foreground font-semibold hover:opacity-90 transition-opacity active:scale-[0.97]">
-                Entrar
-              </button>
-              <p className="text-xs text-muted-foreground text-center">
-                Não tem acesso? Entre em contato com o administrador.
-              </p>
-              <a 
-                href="https://wa.me/5541999995443?text=Quero%20ser%20um%20locador%20da%20LokaHub!" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-[#25D366] text-white font-semibold hover:opacity-90 transition-opacity active:scale-[0.97]"
-              >
-                <MessageCircle size={18} />
-                Quero ser um Locador
-              </a>
-            </form>
+            <div className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm p-8 shadow-xl shadow-primary/5">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {error && (
+                  <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center">
+                    {error}
+                  </div>
+                )}
+                
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">E-mail</label>
+                  <input 
+                    placeholder="exemplo@email.com" 
+                    type="email" 
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)}
+                    className="w-full h-12 px-4 rounded-xl bg-background border border-border/60 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all" 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Senha</label>
+                  <input 
+                    placeholder="••••••••" 
+                    type="password" 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full h-12 px-4 rounded-xl bg-background border border-border/60 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all" 
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="w-full h-12 rounded-xl bg-gradient-party text-primary-foreground font-bold hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98] mt-2"
+                >
+                  Entrar no Painel
+                </button>
+                
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/40"></span></div>
+                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">Ou</span></div>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-xs text-muted-foreground text-center">
+                    Ainda não é um parceiro LokaHub?
+                  </p>
+                  <a 
+                    href="https://wa.me/5541999995443?text=Quero%20ser%20um%20locador%20da%20LokaHub!" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full h-12 rounded-xl border border-[#25D366]/30 bg-[#25D366]/5 text-[#25D366] font-bold hover:bg-[#25D366] hover:text-white transition-all active:scale-[0.98]"
+                  >
+                    <MessageCircle size={18} />
+                    Quero ser um Locador
+                  </a>
+                </div>
+              </form>
+            </div>
           </ScrollReveal>
         </div>
       </main>
