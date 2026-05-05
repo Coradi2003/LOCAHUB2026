@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/40 bg-background py-8">
+    <footer className="border-t border-border/40 bg-background py-4">
       <div className="container">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Esquerda: Logo */}
