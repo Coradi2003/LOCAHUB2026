@@ -40,8 +40,7 @@ export const CATEGORIES = [
   "Brinquedos",
   "Mesa de Jogos",
   "Audiovisual",
-  "Equipamentos para Eventos",
-  "Estruturas para Eventos",
+  "Eventos",
   "Equipamentos Para Obras",
 ];
 
@@ -49,8 +48,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
   "Brinquedos": "🎉",
   "Mesa de Jogos": "🎱",
   "Audiovisual": "🎵",
-  "Equipamentos para Eventos": "🎪",
-  "Estruturas para Eventos": "⛺",
+  "Eventos": "🎪",
   "Equipamentos Para Obras": "🏗️",
 };
 
@@ -60,6 +58,7 @@ export const store = {
     if (error) { console.error("Error fetching products:", error); return []; }
     return data.map(d => ({
       ...d,
+      category: (d.category === "Equipamentos para Eventos" || d.category === "Estruturas para Eventos") ? "Eventos" : d.category,
       landlordId: d.landlord_id,
       isFeatured: d.is_featured,
       createdAt: d.created_at
