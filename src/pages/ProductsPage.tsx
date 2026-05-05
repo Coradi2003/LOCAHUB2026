@@ -39,8 +39,8 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <PublicHeader />
-      <main className="flex-1 pt-20 pb-10">
-        <div className="container">
+      <main className="flex-1 flex flex-col pt-20 pb-10">
+        <div className="container flex-1 flex flex-col">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <ScrollReveal>
               <div className="space-y-2">
@@ -96,11 +96,15 @@ export default function ProductsPage() {
 
           {/* Grid */}
           {filtered.length === 0 ? (
-            <div className="text-center py-20 text-muted-foreground">
-              Nenhum produto encontrado. Tente ajustar os filtros.
+            <div className="flex-1 flex flex-col items-center justify-center min-h-[40vh] text-muted-foreground">
+              <div className="text-center space-y-2">
+                <Search size={40} className="mx-auto mb-4 opacity-20" />
+                <p className="text-lg font-medium">Nenhum produto encontrado</p>
+                <p className="text-sm">Tente ajustar os filtros ou buscar por outro termo.</p>
+              </div>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12">
               {filtered.map((p, i) => (
                 <ScrollReveal key={p.id} delay={i * 60}>
                   <ProductCard
