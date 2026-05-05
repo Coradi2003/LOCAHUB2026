@@ -41,36 +41,50 @@ export default function ProductsPage() {
       <PublicHeader />
       <main className="pt-24 pb-16">
         <div className="container">
-          <ScrollReveal>
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-8">
-              Nossos <span className="text-gradient">Produtos</span>
-            </h1>
-          </ScrollReveal>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <ScrollReveal>
+              <div className="space-y-2">
+                <h1 className="text-4xl font-display font-bold tracking-tight">
+                  Explorar <span className="text-gradient">Locações</span>
+                </h1>
+                <p className="text-muted-foreground">Encontre o que você precisa em um só lugar.</p>
+              </div>
+            </ScrollReveal>
 
-          {/* Search */}
-          <ScrollReveal delay={60}>
-            <div className="relative max-w-md mb-6">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-              <input
-                type="text"
-                placeholder="Buscar produto..."
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 rounded-lg bg-muted/60 border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-              />
-            </div>
-          </ScrollReveal>
+            <ScrollReveal delay={60}>
+              <div className="relative w-full md:max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                <input
+                  type="text"
+                  placeholder="Buscar equipamentos..."
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  className="w-full h-11 pl-10 pr-4 rounded-xl bg-card border border-border/60 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all shadow-sm"
+                />
+              </div>
+            </ScrollReveal>
+          </div>
 
           {/* Categories filter */}
           <ScrollReveal delay={100}>
-            <div className="flex flex-wrap gap-2 mb-10">
+            <div className="flex flex-wrap gap-2 mb-12">
+              <button
+                onClick={() => handleCatClick("")}
+                className={`text-xs font-semibold px-4 py-2 rounded-full border transition-all active:scale-[0.96] ${
+                  selectedCat === ""
+                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
+                    : "bg-card border-border/60 text-muted-foreground hover:border-primary/40"
+                }`}
+              >
+                Todos
+              </button>
               {CATEGORIES.map(cat => (
                 <button
                   key={cat}
                   onClick={() => handleCatClick(cat)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all active:scale-[0.96] ${
+                  className={`text-xs font-semibold px-4 py-2 rounded-full border transition-all active:scale-[0.96] ${
                     selectedCat === cat
-                      ? "bg-primary text-primary-foreground border-primary"
+                      ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
                       : "bg-card border-border/60 text-muted-foreground hover:border-primary/40"
                   }`}
                 >
