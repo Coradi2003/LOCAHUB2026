@@ -151,9 +151,9 @@ export default function ProductDetailPage() {
   )}`;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <PublicHeader />
-      <main className="pt-24 pb-16">
+      <main className="flex-1 pt-20 pb-10">
         <div className="container max-w-5xl">
           <ScrollReveal>
             <Link to="/produtos" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6">
