@@ -39,7 +39,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-background">
       <PublicHeader />
-      <main className="pt-48 pb-16">
+      <main className="pt-32 pb-16">
         <div className="container">
           <ScrollReveal>
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-8">
