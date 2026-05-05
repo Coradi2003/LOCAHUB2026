@@ -213,7 +213,7 @@ export default function AdminPage() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 rounded-xl border border-border/60 bg-card p-6">
           <div className="flex flex-col items-center gap-4 mb-6">
-            <img src="/logo.png" alt="LokaHub Logo" className="h-20 w-auto" />
+            <img src="/logo.png" alt="LokaHub Logo" className="h-32 w-auto" />
             <h1 className="text-xl font-display font-bold text-center">Painel Admin</h1>
           </div>
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
@@ -233,9 +233,9 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-xl">
-        <div className="container flex items-center justify-between h-14">
+        <div className="container flex items-center justify-between h-20">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="LokaHub Logo" className="h-12 w-auto" />
+            <img src="/logo.png" alt="LokaHub Logo" className="h-16 w-auto" />
             <span className="font-display font-bold text-gradient text-lg">Admin</span>
           </div>
           <button onClick={handleLogout} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">

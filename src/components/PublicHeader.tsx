@@ -7,9 +7,9 @@ export function PublicHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 backdrop-blur-xl bg-background/80">
-      <div className="container flex items-center justify-between h-16">
+      <div className="container flex items-center justify-between h-24">
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-2">
-          <img src="/logo.png" alt="LokaHub Logo" className="h-14 w-auto" />
+          <img src="/logo.png" alt="LokaHub Logo" className="h-20 w-auto" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
