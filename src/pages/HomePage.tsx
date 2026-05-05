@@ -73,8 +73,7 @@ export default function HomePage() {
               className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-up leading-relaxed"
               style={{ animationDelay: "200ms" }}
             >
-              Encontre camas elásticas, infláveis, mesas de jogos e muito mais. 
-              Conecte-se aos melhores locadores da sua região.
+              Encontre tudo o que você precisa em um só lugar, simples rápido e fácil.
             </p>
           </div>
 
