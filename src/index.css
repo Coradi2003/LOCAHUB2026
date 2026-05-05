@@ -6,51 +6,50 @@
 
 @layer base {
   :root {
-    --background: 230 25% 7%;
-    --foreground: 210 40% 96%;
+    --background: 0 0% 100%;
+    --foreground: 140 50% 10%;
 
-    --card: 230 20% 10%;
-    --card-foreground: 210 40% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 140 50% 10%;
 
-    --popover: 230 20% 10%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 140 50% 10%;
 
-    --primary: 270 80% 60%;
+    --primary: 142 76% 36%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 90% 50%;
+    --secondary: 142 70% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 230 15% 16%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 140 20% 96%;
+    --muted-foreground: 140 10% 45%;
 
-    --accent: 180 80% 50%;
-    --accent-foreground: 230 25% 7%;
+    --accent: 142 70% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 230 15% 18%;
-    --input: 230 15% 18%;
-    --ring: 270 80% 60%;
+    --border: 140 10% 90%;
+    --input: 140 10% 90%;
+    --ring: 142 76% 36%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --sidebar-background: 230 20% 10%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 270 80% 60%;
+    --sidebar-background: 140 20% 98%;
+    --sidebar-foreground: 140 50% 10%;
+    --sidebar-primary: 142 76% 36%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 15% 16%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 230 15% 18%;
-    --sidebar-ring: 270 80% 60%;
+    --sidebar-accent: 140 20% 94%;
+    --sidebar-accent-foreground: 142 76% 36%;
+    --sidebar-border: 140 10% 90%;
+    --sidebar-ring: 142 76% 36%;
 
-    /* Custom tokens */
-    --glow-purple: 270 80% 60%;
-    --glow-blue: 220 90% 56%;
-    --glow-cyan: 180 80% 50%;
-    --surface-elevated: 230 18% 13%;
-    --gradient-party: linear-gradient(135deg, hsl(270 80% 60%) 0%, hsl(200 90% 50%) 50%, hsl(180 80% 50%) 100%);
+    /* Custom tokens - White + Green Premium Theme */
+    --glow-green: 142 76% 36%;
+    --glow-emerald: 160 84% 39%;
+    --surface-elevated: 140 20% 98%;
+    --gradient-party: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(160 84% 39%) 100%);
   }
 }
 
@@ -79,11 +78,11 @@
   .bg-gradient-party {
     background-image: var(--gradient-party);
   }
-  .glow-purple {
-    box-shadow: 0 0 20px hsl(270 80% 60% / 0.3), 0 0 60px hsl(270 80% 60% / 0.1);
+  .glow-green {
+    box-shadow: 0 0 20px hsl(142 76% 36% / 0.2), 0 0 60px hsl(142 76% 36% / 0.1);
   }
-  .glow-cyan {
-    box-shadow: 0 0 20px hsl(180 80% 50% / 0.3), 0 0 60px hsl(180 80% 50% / 0.1);
+  .glow-emerald {
+    box-shadow: 0 0 20px hsl(160 84% 39% / 0.2), 0 0 60px hsl(160 84% 39% / 0.1);
   }
   .surface-elevated {
     background-color: hsl(var(--surface-elevated));

@@ -11,7 +11,7 @@ export function ProductCard({ product, landlord }: ProductCardProps) {
   return (
     <Link
       to={`/produto/${product.id}`}
-      className="group block rounded-xl overflow-hidden bg-card border border-border/50 hover:border-primary/40 transition-all duration-300 hover:shadow-[0_0_30px_hsl(270_80%_60%/0.12)]"
+      className="group block rounded-xl overflow-hidden bg-card border border-border/50 hover:border-primary/40 transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--primary)/0.12)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img

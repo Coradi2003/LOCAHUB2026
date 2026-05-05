@@ -166,7 +166,7 @@ export default function HomePage() {
               <ScrollReveal key={cat} delay={i * 60}>
                 <Link
                   to={`/produtos?cat=${encodeURIComponent(cat)}`}
-                  className="group flex flex-col items-center gap-3 p-6 rounded-xl bg-card border border-border/50 hover:border-primary/40 transition-all duration-300 hover:shadow-[0_0_24px_hsl(270_80%_60%/0.1)] active:scale-[0.97]"
+                  className="group flex flex-col items-center gap-3 p-6 rounded-xl bg-card border border-border/50 hover:border-primary/40 transition-all duration-300 hover:shadow-[0_0_24px_hsl(var(--primary)/0.1)] active:scale-[0.97]"
                 >
                   <span className="text-3xl">{CATEGORY_ICONS[cat]}</span>
                   <span className="text-sm font-medium text-card-foreground text-center group-hover:text-primary transition-colors">
