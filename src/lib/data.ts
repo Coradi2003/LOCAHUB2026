@@ -120,7 +120,11 @@ export const store = {
     delete payload.id;
 
     const { error } = await supabase.from('products').update(payload).eq('id', id);
-    if (error) console.error("Error updating product:", error);
+    if (error) {
+      console.error("Error updating product:", error);
+      return { error: error.message };
+    }
+    return { success: true };
   },
 
   getLandlords: async (): Promise<Landlord[]> => {

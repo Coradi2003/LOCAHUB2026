@@ -33,8 +33,19 @@ export default function AdminPage() {
   const toggleFeature = async (id: string) => {
     const p = products.find(x => x.id === id);
     if (!p) return;
-    await store.updateProduct(id, { isFeatured: !p.isFeatured });
-    queryClient.invalidateQueries({ queryKey: ["products"] });
+    
+    // Atualização Otimista
+    queryClient.setQueryData(["products"], (old: Product[] | undefined) => 
+      old ? old.map(prod => prod.id === id ? { ...prod, isFeatured: !prod.isFeatured } : prod) : []
+    );
+
+    const result = await store.updateProduct(id, { isFeatured: !p.isFeatured });
+    if (result?.error) {
+      alert("Erro ao destacar produto: " + result.error);
+      await refetchProducts(); // Rollback
+    } else {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    }
   };
 
   const deleteProduct = async (id: string) => {
@@ -59,8 +70,18 @@ export default function AdminPage() {
     const newPrice = prompt("Novo preço:", product.price);
     if (newPrice === null) return;
 
-    await store.updateProduct(product.id, { name: newName || product.name, price: newPrice || product.price });
-    queryClient.invalidateQueries({ queryKey: ["products"] });
+    // Atualização Otimista
+    queryClient.setQueryData(["products"], (old: Product[] | undefined) => 
+      old ? old.map(p => p.id === product.id ? { ...p, name: newName || product.name, price: newPrice || product.price } : p) : []
+    );
+
+    const result = await store.updateProduct(product.id, { name: newName || product.name, price: newPrice || product.price });
+    if (result?.error) {
+      alert("Erro ao editar produto: " + result.error);
+      await refetchProducts(); // Rollback
+    } else {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    }
   };
 
   const deleteLandlord = async (id: string) => {
