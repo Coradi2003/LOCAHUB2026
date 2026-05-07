@@ -92,7 +92,7 @@ export const store = {
     await supabase.from('client_forms').delete().eq('product_id', id);
 
     // 2. Delete the product and return the result
-    const { error, data, status } = await supabase
+    const { error, data } = await supabase
       .from('products')
       .delete()
       .eq('id', id)
@@ -101,6 +101,10 @@ export const store = {
     if (error) {
       console.error("Error deleting product:", error);
       return { error: error.message };
+    }
+
+    if (!data || data.length === 0) {
+      return { error: "Erro de permissão: O banco de dados não permitiu excluir este produto. Verifique as políticas RLS no Supabase." };
     }
 
     return { success: true };
@@ -194,14 +198,19 @@ export const store = {
       }
 
       // 4. Excluir o locador
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('landlords')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (error) {
         console.error("Error deleting landlord:", error);
         return { error: "Erro ao excluir locador: " + error.message };
+      }
+
+      if (!data || data.length === 0) {
+        return { error: "O comando foi enviado, mas o banco de dados não permitiu a exclusão. Isso geralmente acontece por causa das políticas de segurança (RLS) do Supabase. O administrador precisa de uma política 'ALL' ou 'DELETE' para a tabela 'landlords'." };
       }
 
       return { success: true };
@@ -246,6 +255,10 @@ export const store = {
     if (error) {
       console.error("Error deleting form:", error);
       return { error: error.message };
+    }
+
+    if (!data || data.length === 0) {
+      return { error: "Erro de permissão: O banco de dados não permitiu excluir este formulário. Verifique as políticas RLS no Supabase." };
     }
 
     return { success: true };
