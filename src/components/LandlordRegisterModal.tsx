@@ -40,6 +40,22 @@ function formatCPF(value: string): string {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
 
+/** Valida CPF usando o algoritmo dos dígitos verificadores */
+function isValidCPF(value: string): boolean {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length !== 11) return false;
+  // Rejeita sequências iguais (ex: 111.111.111-11)
+  if (/^(\d)\1{10}$/.test(digits)) return false;
+
+  const calc = (len: number) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += parseInt(digits[i]) * (len + 1 - i);
+    const rem = (sum * 10) % 11;
+    return rem === 10 || rem === 11 ? 0 : rem;
+  };
+  return calc(9) === parseInt(digits[9]) && calc(10) === parseInt(digits[10]);
+}
+
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 11);
   if (digits.length <= 10) {
@@ -52,14 +68,25 @@ function formatPhone(value: string): string {
     .replace(/(\d{5})(\d)/, "$1-$2");
 }
 
+/** Exige exatamente 11 dígitos (celular com DDD) */
+function isValidPhone(value: string): boolean {
+  return value.replace(/\D/g, "").length === 11;
+}
+
 function formatCEP(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 8);
   return digits.replace(/(\d{5})(\d)/, "$1-$2");
 }
 // ───────────────────────────────────────────────────────────────────────────────
 
+interface FieldErrors {
+  cpf?: string;
+  whatsapp?: string;
+}
+
 export function LandlordRegisterModal({ isOpen, onClose }: LandlordRegisterModalProps) {
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [isVisible, setIsVisible] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -90,6 +117,7 @@ export function LandlordRegisterModal({ isOpen, onClose }: LandlordRegisterModal
     setTimeout(() => {
       onClose();
       setForm(INITIAL_FORM);
+      setFieldErrors({});
     }, 300);
   };
 
@@ -104,6 +132,19 @@ export function LandlordRegisterModal({ isOpen, onClose }: LandlordRegisterModal
     if (field === "whatsapp") value = formatPhone(value);
     if (field === "cep") value = formatCEP(value);
     setForm((prev) => ({ ...prev, [field]: value }));
+    // Limpa o erro do campo ao digitar
+    if (field === "cpf" || field === "whatsapp") {
+      setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const handleBlurValidation = (field: "cpf" | "whatsapp") => () => {
+    if (field === "cpf" && form.cpf && !isValidCPF(form.cpf)) {
+      setFieldErrors((prev) => ({ ...prev, cpf: "CPF inválido" }));
+    }
+    if (field === "whatsapp" && form.whatsapp && !isValidPhone(form.whatsapp)) {
+      setFieldErrors((prev) => ({ ...prev, whatsapp: "Digite todos os 11 dígitos (DDD + 9 dígitos)" }));
+    }
   };
 
   // Busca automática do endereço pelo CEP
@@ -127,6 +168,17 @@ export function LandlordRegisterModal({ isOpen, onClose }: LandlordRegisterModal
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Valida CPF
+    if (!isValidCPF(form.cpf)) {
+      setFieldErrors((prev) => ({ ...prev, cpf: "CPF inválido" }));
+      return;
+    }
+    // Valida WhatsApp completo (11 dígitos)
+    if (!isValidPhone(form.whatsapp)) {
+      setFieldErrors((prev) => ({ ...prev, whatsapp: "Digite todos os 11 dígitos (DDD + 9 dígitos)" }));
+      return;
+    }
 
     const message = `*NOVO PEDIDO DE CADASTRO - LOCADOR*
 
@@ -222,6 +274,8 @@ export function LandlordRegisterModal({ isOpen, onClose }: LandlordRegisterModal
               placeholder="000.000.000-00"
               value={form.cpf}
               onChange={handleChange("cpf")}
+              onBlur={handleBlurValidation("cpf")}
+              error={fieldErrors.cpf}
               inputMode="numeric"
               required
             />
@@ -234,6 +288,8 @@ export function LandlordRegisterModal({ isOpen, onClose }: LandlordRegisterModal
               placeholder="(41) 99999-0000"
               value={form.whatsapp}
               onChange={handleChange("whatsapp")}
+              onBlur={handleBlurValidation("whatsapp")}
+              error={fieldErrors.whatsapp}
               inputMode="numeric"
               required
             />
@@ -318,15 +374,16 @@ interface FieldInputProps {
   type?: string;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
   required?: boolean;
+  error?: string;
 }
 
 function FieldInput({
-  id, label, icon, placeholder, value, onChange, onBlur, type = "text", inputMode, required,
+  id, label, icon, placeholder, value, onChange, onBlur, type = "text", inputMode, required, error,
 }: FieldInputProps) {
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-        <span className="text-primary opacity-80">{icon}</span>
+        <span className={error ? "text-red-500" : "text-primary opacity-80"}>{icon}</span>
         {label}
       </label>
       <input
@@ -338,8 +395,17 @@ function FieldInput({
         onBlur={onBlur}
         inputMode={inputMode}
         required={required}
-        className="w-full h-12 px-4 rounded-xl bg-background border border-border/60 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
+        className={`w-full h-12 px-4 rounded-xl bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 transition-all ${
+          error
+            ? "border border-red-500/70 focus:ring-red-400/40 focus:border-red-500/70"
+            : "border border-border/60 focus:ring-primary/40 focus:border-primary/40"
+        }`}
       />
+      {error && (
+        <p className="text-xs text-red-500 flex items-center gap-1 mt-0.5">
+          <span>⚠</span> {error}
+        </p>
+      )}
     </div>
   );
 }
