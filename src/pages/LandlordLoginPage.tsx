@@ -4,6 +4,7 @@ import { PublicHeader } from "@/components/PublicHeader";
 import { Footer } from "@/components/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { store } from "@/lib/data";
+import { LandlordRegisterModal } from "@/components/LandlordRegisterModal";
 
 import { MessageCircle } from "lucide-react";
 
@@ -12,6 +13,7 @@ export default function LandlordLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,15 +88,15 @@ export default function LandlordLoginPage() {
                   <p className="text-xs text-muted-foreground text-center">
                     Ainda não é um parceiro LokaHub?
                   </p>
-                  <a 
-                    href="https://wa.me/5541999995443?text=Quero%20ser%20um%20locador%20da%20LokaHub!" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <button
+                    type="button"
+                    id="btn-quero-ser-locador"
+                    onClick={() => setIsModalOpen(true)}
                     className="flex items-center justify-center gap-2 w-full h-12 rounded-xl border border-[#25D366]/30 bg-[#25D366]/5 text-[#25D366] font-bold hover:bg-[#25D366] hover:text-white transition-all active:scale-[0.98]"
                   >
                     <MessageCircle size={18} />
                     Quero ser um Locador
-                  </a>
+                  </button>
                 </div>
               </form>
             </div>
@@ -102,6 +104,12 @@ export default function LandlordLoginPage() {
         </div>
       </main>
       <Footer />
+
+      {/* Modal de Cadastro de Locador */}
+      <LandlordRegisterModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
