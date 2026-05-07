@@ -151,7 +151,7 @@ export const store = {
       document: l.document,
       phone: l.phone,
       email: l.email,
-      password: "auth-managed", 
+      password: l.password, 
       city: l.city,
       cep: l.cep,
       type: l.type,

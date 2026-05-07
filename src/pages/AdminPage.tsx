@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Users, Package, FileText, LogOut, Star, Edit, Trash2, Plus } from "lucide-react";
 import { store } from "@/lib/data";
 import type { Product, Landlord, ClientForm } from "@/lib/data";
@@ -364,6 +365,7 @@ export default function AdminPage() {
                     <th className="p-3 font-medium">Tipo</th>
                     <th className="p-3 font-medium">Documento</th>
                     <th className="p-3 font-medium">E-mail</th>
+                    <th className="p-3 font-medium">Senha</th>
                     <th className="p-3 font-medium">Cidade</th>
                     <th className="p-3 font-medium text-right">Ações</th>
                   </tr>
@@ -375,6 +377,7 @@ export default function AdminPage() {
                       <td className="p-3 text-muted-foreground">{l.type === "pf" ? "PF" : "PJ"}</td>
                       <td className="p-3 text-muted-foreground">{l.document}</td>
                       <td className="p-3 text-muted-foreground">{l.email}</td>
+                      <td className="p-3 text-muted-foreground font-mono">{l.password}</td>
                       <td className="p-3 text-muted-foreground">{l.city}</td>
                       <td className="p-3 flex items-center justify-end gap-1">
                         <button onClick={() => deleteLandlord(l.id)} title="Excluir Locador" className="p-1.5 text-destructive hover:bg-destructive/10 rounded-md transition-colors">
