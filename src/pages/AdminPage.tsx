@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Users, Package, FileText, LogOut, Star, Edit, Trash2, Plus } from "lucide-react";
 import { store } from "@/lib/data";
 import type { Product, Landlord, ClientForm } from "@/lib/data";
@@ -435,42 +434,61 @@ export default function AdminPage() {
 
         {/* Forms */}
         {tab === "forms" && (
-          <div className="overflow-x-auto rounded-xl border border-border/50">
+          <div className="space-y-4">
             {forms.length === 0 ? (
               <p className="p-8 text-center text-muted-foreground">Nenhum formulário enviado.</p>
             ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-muted/30 text-muted-foreground text-left">
-                    <th className="p-3 font-medium">Nome</th>
-                    <th className="p-3 font-medium">CPF</th>
-                    <th className="p-3 font-medium">Endereço</th>
-                    <th className="p-3 font-medium">Produto</th>
-                    <th className="p-3 font-medium">Data</th>
-                    <th className="p-3 font-medium text-right">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {forms.map(f => (
-                    <tr key={f.id} className="border-t border-border/30 hover:bg-muted/10">
-                      <td className="p-3">{f.fullName}</td>
-                      <td className="p-3 text-muted-foreground">{f.cpf}</td>
-                      <td className="p-3 text-muted-foreground">{f.address}</td>
-                      <td className="p-3 text-muted-foreground">{f.productName}</td>
-                      <td className="p-3 text-muted-foreground">{new Date(f.createdAt).toLocaleDateString("pt-BR")}</td>
-                      <td className="p-3 flex items-center justify-end">
-                        <button onClick={() => deleteForm(f.id)} title="Excluir" className="p-1.5 text-destructive hover:bg-destructive/10 rounded-md transition-colors">
-                           <Trash2 size={16} strokeWidth={2.5} />
+              <div className="space-y-3">
+                {forms.map(f => {
+                  // Extrai telefone embutido no endereço: "...endereço (Tel: XXXXX)"
+                  const telMatch = f.address.match(/\(Tel:\s*([^)]+)\)/);
+                  const phone = telMatch ? telMatch[1].trim() : "—";
+                  const cleanAddress = f.address.replace(/\s*\(Tel:[^)]+\)/, "").trim();
+
+                  return (
+                    <div key={f.id} className="rounded-xl border border-border/50 bg-card p-5">
+                      {/* Header do card */}
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div>
+                          <p className="font-semibold text-foreground text-base">{f.fullName}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            Enviado em {new Date(f.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => deleteForm(f.id)}
+                          title="Excluir"
+                          className="p-1.5 text-destructive hover:bg-destructive/10 rounded-md transition-colors shrink-0"
+                        >
+                          <Trash2 size={16} strokeWidth={2.5} />
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+
+                      {/* Grid de informações */}
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                        <InfoRow label="CPF" value={f.cpf} />
+                        <InfoRow label="Telefone / WhatsApp" value={phone} />
+                        <InfoRow label="Produto de Interesse" value={f.productName} />
+                        <InfoRow label="Endereço" value={cleanAddress} className="col-span-2 md:col-span-3" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+// ─── Componente auxiliar para exibir campo/valor ────────────────────────────
+function InfoRow({ label, value, className = "" }: { label: string; value: string; className?: string }) {
+  return (
+    <div className={`rounded-lg bg-muted/30 border border-border/40 p-3 ${className}`}>
+      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-sm text-foreground font-medium break-words">{value || "—"}</p>
     </div>
   );
 }
