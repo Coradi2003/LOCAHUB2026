@@ -198,19 +198,25 @@ export const store = {
       }
 
       // 4. Excluir o locador
-      const { error, data } = await supabase
+      const { error: deleteError } = await supabase
         .from('landlords')
         .delete()
-        .eq('id', id)
-        .select();
+        .eq('id', id);
 
-      if (error) {
-        console.error("Error deleting landlord:", error);
-        return { error: "Erro ao excluir locador: " + error.message };
+      if (deleteError) {
+        console.error("Error deleting landlord:", deleteError);
+        return { error: "Erro ao excluir locador: " + deleteError.message };
       }
 
-      if (!data || data.length === 0) {
-        return { error: "O comando foi enviado, mas o banco de dados não permitiu a exclusão. Isso geralmente acontece por causa das políticas de segurança (RLS) do Supabase. O administrador precisa de uma política 'ALL' ou 'DELETE' para a tabela 'landlords'." };
+      // 5. Verificar se o locador ainda existe (confirma exclusão sem depender do .select())
+      const { data: stillExists } = await supabase
+        .from('landlords')
+        .select('id')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (stillExists) {
+        return { error: "O banco de dados não permitiu a exclusão. Rode o seguinte comando no SQL Editor do Supabase:\n\nCREATE POLICY \"Allow admin all\" ON landlords FOR ALL TO authenticated USING (true) WITH CHECK (true);" };
       }
 
       return { success: true };
