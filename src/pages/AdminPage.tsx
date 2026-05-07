@@ -444,9 +444,9 @@ export default function AdminPage() {
               <div className="space-y-3">
                 {forms.map(f => {
                   // Extrai telefone embutido no endereço: "...endereço (Tel: XXXXX)"
-                  const telMatch = f.address.match(/\(Tel:\s*([^)]+)\)/);
+                  const telMatch = f.address.match(/\(Tel:\s*(.+)\)$/);
                   const phone = telMatch ? telMatch[1].trim() : "—";
-                  const cleanAddress = f.address.replace(/\s*\(Tel:[^)]+\)/, "").trim();
+                  const cleanAddress = f.address.replace(/\s*\(Tel:.*?\)$/, "").trim();
 
                   return (
                     <div key={f.id} className="rounded-xl border border-border/50 bg-card p-5">
