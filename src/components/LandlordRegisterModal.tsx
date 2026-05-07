@@ -180,17 +180,17 @@ export function LandlordRegisterModal({ isOpen, onClose }: LandlordRegisterModal
       return;
     }
 
-    const message = `*NOVO PEDIDO DE CADASTRO - LOCADOR*
+    const mensagem = `*NOVO PEDIDO DE CADASTRO - LOCADOR*
 
-👤 Nome: ${form.nome}
-🪪 CPF: ${form.cpf}
-📱 WhatsApp: ${form.whatsapp}
-📧 E-mail: ${form.email}
-🔒 Senha: ${form.senha}
-📍 CEP: ${form.cep}
-🏠 Endereço: ${form.endereco}`;
+Nome: ${form.nome}
+CPF: ${form.cpf}
+WhatsApp: ${form.whatsapp}
+E-mail: ${form.email}
+Senha: ${form.senha}
+CEP: ${form.cep}
+Endereco: ${form.endereco}`;
 
-    const url = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     handleClose();
   };
