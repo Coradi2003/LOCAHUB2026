@@ -103,10 +103,6 @@ export const store = {
       return { error: error.message };
     }
 
-    if (!data || data.length === 0) {
-      return { error: "Nenhum produto foi excluído. Verifique suas permissões." };
-    }
-
     return { success: true };
   },
 
@@ -180,26 +176,39 @@ export const store = {
   },
 
   deleteLandlord: async (id: string) => {
-    // 1. Delete associated products first
-    await supabase.from('products').delete().eq('landlord_id', id);
+    try {
+      // 1. Buscar os IDs dos produtos deste locador
+      const { data: landlordProducts } = await supabase
+        .from('products')
+        .select('id')
+        .eq('landlord_id', id);
 
-    // 2. Delete the landlord
-    const { error, data } = await supabase
-      .from('landlords')
-      .delete()
-      .eq('id', id)
-      .select();
+      if (landlordProducts && landlordProducts.length > 0) {
+        const productIds = landlordProducts.map(p => p.id);
+        
+        // 2. Excluir formulários desses produtos
+        await supabase.from('client_forms').delete().in('product_id', productIds);
+        
+        // 3. Excluir os produtos
+        await supabase.from('products').delete().in('id', productIds);
+      }
 
-    if (error) {
-      console.error("Error deleting landlord:", error);
-      return { error: "Erro ao excluir locador: " + error.message };
+      // 4. Excluir o locador
+      const { error } = await supabase
+        .from('landlords')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error("Error deleting landlord:", error);
+        return { error: "Erro ao excluir locador: " + error.message };
+      }
+
+      return { success: true };
+    } catch (err: any) {
+      console.error("Critical error in deleteLandlord:", err);
+      return { error: "Erro crítico: " + err.message };
     }
-
-    if (!data || data.length === 0) {
-      return { error: "Nenhum locador foi excluído. Verifique suas permissões." };
-    }
-
-    return { success: true };
   },
 
   getForms: async (): Promise<ClientForm[]> => {
@@ -237,10 +246,6 @@ export const store = {
     if (error) {
       console.error("Error deleting form:", error);
       return { error: error.message };
-    }
-
-    if (!data || data.length === 0) {
-      return { error: "Nenhum formulário foi excluído. Verifique suas permissões." };
     }
 
     return { success: true };
