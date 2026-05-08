@@ -212,17 +212,27 @@ export const store = {
         await supabase.from('products').delete().in('id', productIds);
       }
 
-      // 4. Excluir o locador
-      // Nota: não fazemos re-leitura após o delete pois o RLS pode bloquear o SELECT
-      // mesmo que o DELETE tenha funcionado. Confiamos no deleteError para detectar falhas.
-      const { error: deleteError } = await supabase
+      // 4. Excluir o locador e verificar se algo foi removido
+      const { data, error: deleteError } = await supabase
         .from('landlords')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (deleteError) {
         console.error("Error deleting landlord:", deleteError);
         return { error: "Erro ao excluir locador: " + deleteError.message };
+      }
+
+      // Se data estiver vazio, significa que o RLS bloqueou a exclusão
+      if (!data || data.length === 0) {
+        return { 
+          error: "A deleção foi bloqueada pelo banco (RLS).\n\n" +
+                 "Verifique se você está logado como admin@lokahub.com.br.\n\n" +
+                 "Rode este comando no SQL Editor:\n" +
+                 "DROP POLICY IF EXISTS \"Admin Full Access\" ON landlords;\n" +
+                 "CREATE POLICY \"Admin Full Access\" ON landlords FOR ALL TO authenticated USING (auth.jwt() ->> 'email' = 'admin@lokahub.com.br');"
+        };
       }
 
       return { success: true };
