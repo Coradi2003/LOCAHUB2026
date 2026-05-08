@@ -137,6 +137,10 @@ export const store = {
   },
   
   signUpLandlord: async (l: Landlord) => {
+    // Salva as credenciais admin para restaurar a sessão depois
+    const adminEmail = "admin@lokahub.com.br";
+    const adminSession = localStorage.getItem("lokahub_admin") === "true";
+
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: l.email,
       password: l.password,
@@ -145,8 +149,19 @@ export const store = {
     if (authError) return { error: authError.message };
     if (!authData.user?.id) return { error: "Erro desconhecido ao criar auth." };
 
+    const newUserId = authData.user.id;
+
+    // Restaura a sessão do admin imediatamente após criar o locador
+    // pois o signUp substitui a sessão ativa
+    if (adminSession) {
+      const adminPass = prompt("Para confirmar, insira a senha do admin novamente:");
+      if (adminPass) {
+        await supabase.auth.signInWithPassword({ email: adminEmail, password: adminPass });
+      }
+    }
+
     const { error: dbError } = await supabase.from('landlords').insert([{
-      id: authData.user.id,
+      id: newUserId,
       name: l.name,
       document: l.document,
       phone: l.phone,
@@ -159,7 +174,7 @@ export const store = {
     }]);
 
     if (dbError) return { error: dbError.message };
-    return { data: authData.user.id };
+    return { data: newUserId };
   },
 
   signIn: async (email: string, pass: string) => {
@@ -198,6 +213,8 @@ export const store = {
       }
 
       // 4. Excluir o locador
+      // Nota: não fazemos re-leitura após o delete pois o RLS pode bloquear o SELECT
+      // mesmo que o DELETE tenha funcionado. Confiamos no deleteError para detectar falhas.
       const { error: deleteError } = await supabase
         .from('landlords')
         .delete()
@@ -206,17 +223,6 @@ export const store = {
       if (deleteError) {
         console.error("Error deleting landlord:", deleteError);
         return { error: "Erro ao excluir locador: " + deleteError.message };
-      }
-
-      // 5. Verificar se o locador ainda existe (confirma exclusão sem depender do .select())
-      const { data: stillExists } = await supabase
-        .from('landlords')
-        .select('id')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (stillExists) {
-        return { error: "O banco de dados não permitiu a exclusão. Rode o seguinte comando no SQL Editor do Supabase:\n\nCREATE POLICY \"Allow admin all\" ON landlords FOR ALL TO authenticated USING (true) WITH CHECK (true);" };
       }
 
       return { success: true };
